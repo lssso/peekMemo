@@ -1,13 +1,16 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
 namespace PeekMemo
 {
     public partial class MainWindow : Window
     {
+        private bool isPinned = false;
         public MainWindow()
         {
             InitializeComponent();
@@ -25,12 +28,19 @@ namespace PeekMemo
         {
             if (e.Key == Key.Escape)
             {
-                this.Hide();
+                isPinned = false;
+                HideMemo();
             }
         }
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            this.DragMove();
+            isPinned = true;
+            ShowMemo();
+
+            if (e.ClickCount == 2)
+            {
+                this.DragMove();
+            }
         }
         private void MemoTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
@@ -60,15 +70,66 @@ namespace PeekMemo
 
         private void SetWindowPosition()
         {
-            var workArea = SystemParameters.WorkArea;
+            //var workArea = SystemParameters.WorkArea;
 
-            this.Left = workArea.Right - this.Width - 20;
-            this.Top = workArea.Top + (workArea.Height - this.Height) / 2;
+            //this.Left = workArea.Right - 40;
+            //this.Top = workArea.Top + (workArea.Height - this.Height) / 2;
+            HideMemo();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             SetWindowPosition();
+        }
+
+        private void Window_MouseEnter(object sender, MouseEventArgs e)
+        {
+            ShowMemo();
+        }
+
+        private void Window_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (!isPinned)
+            {
+                HideMemo();
+            }
+        }
+
+        private void ShowMemo()
+        {
+            var workArea = SystemParameters.WorkArea;
+
+            // 전체 창이 보이게
+            AnimateWindow(workArea.Right - this.Width);
+            this.Top = workArea.Top + (workArea.Height - this.Height) / 2;
+        }
+
+        private void HideMemo()
+        {
+            var workArea = SystemParameters.WorkArea;
+
+            // 탭 40px만 보이게
+            AnimateWindow(workArea.Right - 40);
+            this.Top = workArea.Top + (workArea.Height - this.Height) / 2;
+        }
+        private void AnimateWindow(double targetLeft)
+        {
+            DoubleAnimation animation = new DoubleAnimation();
+
+            animation.To = targetLeft;
+            animation.Duration = TimeSpan.FromMilliseconds(300);
+
+            this.BeginAnimation(Window.LeftProperty, animation);
+        }
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            isPinned = true;
+            ShowMemo();
+        }
+        private void MemoTextBox_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            isPinned = true;
+            ShowMemo();
         }
 
     }

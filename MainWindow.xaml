@@ -12,45 +12,78 @@
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent">
-    <Grid Background="Transparent">
+    <Grid Background="Transparent"
+      MouseEnter="Window_MouseEnter"
+      MouseLeave="Window_MouseLeave"
+      MouseLeftButtonDown="Window_MouseLeftButtonDown">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition Width="220"/>
+        </Grid.ColumnDefinitions>
 
         <Border
-         Background="#FFF8BBD0"
-        CornerRadius="20"
-        Padding="15"
-        MouseLeftButtonDown="Border_MouseLeftButtonDown">
+    Grid.Column="1"
+    Background="#FFF8BBD0"
+    CornerRadius="0 20 20 0"
+    Padding="15">
 
-            <StackPanel>
-                <TextBlock
-        Text="PeekMemo"
-        FontSize="22"
-        FontWeight="Bold"
-        Foreground="#333333"
-        Margin="0 0 0 10"
-        HorizontalAlignment="Center"/>
+        <StackPanel>
+
+            <TextBlock
+                Text="PeekMemo"
+                FontSize="22"
+                FontWeight="Bold"
+                Foreground="#333333"
+                Margin="0 0 0 10"
+                HorizontalAlignment="Center"/>
 
                 <TextBox
-        x:Name="MemoTextBox"
-        Height="290"
-        FontSize="15"
-        TextWrapping="Wrap"
-        AcceptsReturn="True"
-        VerticalScrollBarVisibility="Auto"
-        Background="#FFFFF8E1"
-        BorderThickness="0"
-        Padding="10"
-        TextChanged="MemoTextBox_TextChanged"/>
+                x:Name="MemoTextBox"
+                Height="290"
+                FontSize="15"
+                TextWrapping="Wrap"
+                AcceptsReturn="True"
+                VerticalScrollBarVisibility="Auto"
+                Background="#FFFFF8E1"
+                BorderThickness="0"
+                Padding="10"
+                TextChanged="MemoTextBox_TextChanged"
+                PreviewMouseLeftButtonDown="MemoTextBox_PreviewMouseLeftButtonDown"/>
 
                 <TextBlock
-        x:Name="SaveStatusText"
-        Text="아직 저장되지 않음"
-        FontSize="11"
-        Foreground="#777777"
-        Margin="0 8 0 0"
-        HorizontalAlignment="Right"/>
-            </StackPanel>
+                x:Name="SaveStatusText"
+                Text="아직 저장되지 않음"
+                FontSize="11"
+                Foreground="#777777"
+                Margin="0 8 0 0"
+                HorizontalAlignment="Right"/>
 
-        </Border>
+        </StackPanel>
+
+    </Border>
+
+        <Border
+    Grid.Column="0"
+    Background="#FFFFD54F"
+    CornerRadius="20 0 0 20">
+
+            <TextBlock
+            Text="업무"
+            FontSize="14"
+            FontWeight="Bold"
+            Foreground="#333333"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            RenderTransformOrigin="0.5,0.5">
+
+            <TextBlock.RenderTransform>
+                <RotateTransform Angle="90"/>
+            </TextBlock.RenderTransform>
+
+        </TextBlock>
+
+    </Border>
 
     </Grid>
 </Window>
