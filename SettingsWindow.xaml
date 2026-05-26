@@ -1,0 +1,58 @@
+﻿<Window x:Class="PeekMemo.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="PeekMemo 설정"
+        Width="320"
+        Height="260"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner">
+
+    <Border Background="White" Padding="20">
+        <StackPanel>
+            <TextBlock
+                Text="PeekMemo 설정"
+                FontSize="22"
+                FontWeight="Bold"
+                Foreground="#333333"
+                Margin="0 0 0 18"/>
+
+            <TextBlock Text="인덱스 제목" Margin="0 0 0 5"/>
+
+            <TextBox
+                x:Name="TitleTextBox"
+                MaxLength="6"
+                Height="30"
+                Text="업무"
+                Margin="0 0 0 18"/>
+
+            <TextBlock Text="인덱스 색상" Margin="0 0 0 8"/>
+
+            <StackPanel Orientation="Horizontal" Margin="0 0 0 22">
+                <RadioButton GroupName="MemoColor" IsChecked="True" Tag="#FFFFD54F" Margin="0 0 12 0">
+                    <Ellipse Width="24" Height="24" Fill="#FFFFD54F"/>
+                </RadioButton>
+
+                <RadioButton GroupName="MemoColor" Tag="#FFF8BBD0" Margin="0 0 12 0">
+                    <Ellipse Width="24" Height="24" Fill="#FFF8BBD0"/>
+                </RadioButton>
+
+                <RadioButton GroupName="MemoColor" Tag="#FFC8E6C9" Margin="0 0 12 0">
+                    <Ellipse Width="24" Height="24" Fill="#FFC8E6C9"/>
+                </RadioButton>
+
+                <RadioButton GroupName="MemoColor" Tag="#FFBBDEFB" Margin="0 0 12 0">
+                    <Ellipse Width="24" Height="24" Fill="#FFBBDEFB"/>
+                </RadioButton>
+
+                <RadioButton GroupName="MemoColor" Tag="#FFD1C4E9">
+                    <Ellipse Width="24" Height="24" Fill="#FFD1C4E9"/>
+                </RadioButton>
+            </StackPanel>
+
+            <Button
+                Content="저장"
+                Height="34"
+                Click="SaveButton_Click"/>
+        </StackPanel>
+    </Border>
+</Window>

@@ -30,13 +30,21 @@
 
         <StackPanel>
 
-            <TextBlock
-                Text="PeekMemo"
-                FontSize="22"
-                FontWeight="Bold"
-                Foreground="#333333"
-                Margin="0 0 0 10"
-                HorizontalAlignment="Center"/>
+                <DockPanel Margin="0 0 0 10">
+                    <Button
+                        Content="⚙"
+                        Width="28"
+                        Height="28"
+                        DockPanel.Dock="Right"
+                        Click="SettingsButton_Click"/>
+
+                                <TextBlock
+                        Text="PeekMemo"
+                        FontSize="22"
+                        FontWeight="Bold"
+                        Foreground="#333333"
+                        HorizontalAlignment="Center"/>      
+                </DockPanel>
 
                 <TextBox
                 x:Name="MemoTextBox"

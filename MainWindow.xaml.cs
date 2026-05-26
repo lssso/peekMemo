@@ -1,4 +1,5 @@
-﻿using System;
+﻿using peekMemo;
+using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -130,6 +131,12 @@ namespace PeekMemo
         {
             isPinned = true;
             ShowMemo();
+        }
+
+        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            SettingsWindow settingsWindow = new SettingsWindow();
+            settingsWindow.ShowDialog();
         }
 
     }
