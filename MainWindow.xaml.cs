@@ -6,12 +6,15 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
+using System.Windows.Media;
 
 namespace PeekMemo
 {
     public partial class MainWindow : Window
     {
+        private int currentIndex = 0;
         private bool isPinned = false;
+        private AppSettings appSettings;
         public MainWindow()
         {
             InitializeComponent();
@@ -19,6 +22,10 @@ namespace PeekMemo
             saveTimer = new DispatcherTimer();
             saveTimer.Interval = TimeSpan.FromSeconds(1);
             saveTimer.Tick += SaveTimer_Tick;
+
+            appSettings = SettingsService.Load();
+
+            ApplySettings();
 
             LoadMemo();
         }
@@ -54,7 +61,7 @@ namespace PeekMemo
         {
             saveTimer.Stop();
 
-            File.WriteAllText("memo.txt", MemoTextBox.Text);
+            SaveMemo();
 
             SaveStatusText.Text =
                 DateTime.Now.ToString("yy.MM.dd HH:mm") + " 저장됨";
@@ -62,10 +69,17 @@ namespace PeekMemo
 
         private void LoadMemo()
         {
-            if (File.Exists("memo.txt"))
+            string memoFileName = GetCurrentMemoFileName();
+
+            if (File.Exists(memoFileName))
             {
-                MemoTextBox.Text = File.ReadAllText("memo.txt");
+                MemoTextBox.Text = File.ReadAllText(memoFileName);
                 SaveStatusText.Text = "저장된 메모 불러옴";
+            }
+            else
+            {
+                MemoTextBox.Text = "";
+                SaveStatusText.Text = "새 메모";
             }
         }
 
@@ -110,7 +124,7 @@ namespace PeekMemo
             var workArea = SystemParameters.WorkArea;
 
             // 탭 40px만 보이게
-            AnimateWindow(workArea.Right - 40);
+            AnimateWindow(workArea.Right - 32);
             this.Top = workArea.Top + (workArea.Height - this.Height) / 2;
         }
         private void AnimateWindow(double targetLeft)
@@ -135,10 +149,76 @@ namespace PeekMemo
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            SettingsWindow settingsWindow = new SettingsWindow();
-            settingsWindow.ShowDialog();
+            SettingsWindow settingsWindow = new SettingsWindow(appSettings);
+
+            settingsWindow.Owner = this;
+            settingsWindow.WindowStartupLocation = WindowStartupLocation.Manual;
+
+            settingsWindow.Left = this.Left - settingsWindow.Width - 10;
+            settingsWindow.Top = this.Top;
+
+            bool? result = settingsWindow.ShowDialog();
+
+            if (result == true)
+            {
+                ApplySettings();
+            }
         }
 
+        private void ApplySettings()
+        {
+            MemoIndexSettings index1 = appSettings.Indexes[0];
+            MemoIndexSettings index2 = appSettings.Indexes[1];
+
+            MemoTabText1.Text = index1.Title;
+            MemoTabText2.Text = index2.Title;
+
+            Brush colorBrush1 =
+                (Brush)new BrushConverter().ConvertFromString(index1.Color);
+
+            Brush colorBrush2 =
+                (Brush)new BrushConverter().ConvertFromString(index2.Color);
+
+            MemoTabBorder1.Background = colorBrush1;
+            MemoTabBorder2.Background = colorBrush2;
+
+            MemoIndexSettings currentIndexSetting = appSettings.Indexes[currentIndex];
+
+            Brush currentColorBrush =
+                (Brush)new BrushConverter().ConvertFromString(currentIndexSetting.Color);
+
+            MemoBodyBorder.Background = currentColorBrush;
+        }
+
+        private string GetCurrentMemoFileName()
+        {
+            return appSettings.Indexes[currentIndex].MemoFileName;
+        }
+
+        private void MemoTab1_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            SwitchMemo(0);
+        }
+
+        private void MemoTab2_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            SwitchMemo(1);
+        }
+        private void SwitchMemo(int index)
+        {
+            SaveMemo();
+
+            currentIndex = index;
+
+            LoadMemo();
+
+            ApplySettings();
+        }
+
+        private void SaveMemo()
+        {
+            File.WriteAllText(GetCurrentMemoFileName(), MemoTextBox.Text);
+        }
     }
 
 }

@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="PeekMemo 설정"
         Width="320"
-        Height="260"
+        Height="340"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner">
 
@@ -27,7 +27,7 @@
 
             <TextBlock Text="인덱스 색상" Margin="0 0 0 8"/>
 
-            <StackPanel Orientation="Horizontal" Margin="0 0 0 22">
+            <StackPanel x:Name="ColorPanel" Orientation="Horizontal" Margin="0 0 0 22">
                 <RadioButton GroupName="MemoColor" IsChecked="True" Tag="#FFFFD54F" Margin="0 0 12 0">
                     <Ellipse Width="24" Height="24" Fill="#FFFFD54F"/>
                 </RadioButton>
@@ -49,10 +49,39 @@
                 </RadioButton>
             </StackPanel>
 
-            <Button
-                Content="저장"
-                Height="34"
-                Click="SaveButton_Click"/>
+            <Border
+    Background="#FFF3F3F3"
+    CornerRadius="12"
+    Padding="6"
+    Margin="0 20 0 0">
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button
+            Grid.Column="0"
+            Content="저장"
+            Height="40"
+            Background="#FFFFD54F"
+            BorderThickness="0"
+            FontWeight="Bold"
+            Click="SaveButton_Click"/>
+
+                    <Button
+            Grid.Column="2"
+            Content="닫기"
+            Height="40"
+            Background="White"
+            BorderThickness="0"
+            Click="CloseButton_Click"/>
+
+                </Grid>
+
+            </Border>
         </StackPanel>
     </Border>
 </Window>
