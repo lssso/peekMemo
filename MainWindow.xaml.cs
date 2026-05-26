@@ -1,28 +1,76 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Threading;
 
-namespace peekMemo
+namespace PeekMemo
 {
-    /// <summary>
-    /// MainWindow.xaml에 대한 상호 작용 논리
-    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
         {
             InitializeComponent();
+
+            saveTimer = new DispatcherTimer();
+            saveTimer.Interval = TimeSpan.FromSeconds(1);
+            saveTimer.Tick += SaveTimer_Tick;
+
+            LoadMemo();
         }
+
+        private DispatcherTimer saveTimer;
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                this.Hide();
+            }
+        }
+        private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.DragMove();
+        }
+        private void MemoTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            SaveStatusText.Text = "입력 중...";
+
+            saveTimer.Stop();
+            saveTimer.Start();
+        }
+        private void SaveTimer_Tick(object sender, EventArgs e)
+        {
+            saveTimer.Stop();
+
+            File.WriteAllText("memo.txt", MemoTextBox.Text);
+
+            SaveStatusText.Text =
+                DateTime.Now.ToString("yy.MM.dd HH:mm") + " 저장됨";
+        }
+
+        private void LoadMemo()
+        {
+            if (File.Exists("memo.txt"))
+            {
+                MemoTextBox.Text = File.ReadAllText("memo.txt");
+                SaveStatusText.Text = "저장된 메모 불러옴";
+            }
+        }
+
+        private void SetWindowPosition()
+        {
+            var workArea = SystemParameters.WorkArea;
+
+            this.Left = workArea.Right - this.Width - 20;
+            this.Top = workArea.Top + (workArea.Height - this.Height) / 2;
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            SetWindowPosition();
+        }
+
     }
+
 }
