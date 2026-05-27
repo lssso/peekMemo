@@ -1,5 +1,4 @@
-﻿using peekMemo;
-using System;
+﻿using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -15,6 +14,7 @@ namespace PeekMemo
         private int currentIndex = 0;
         private bool isPinned = false;
         private AppSettings appSettings;
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -99,12 +99,15 @@ namespace PeekMemo
 
         private void Window_MouseEnter(object sender, MouseEventArgs e)
         {
-            ShowMemo();
+            if (appSettings.OpenMode == "Hover")
+            {
+                ShowMemo();
+            }
         }
 
         private void Window_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (!isPinned)
+            if (appSettings.OpenMode == "Hover" && !isPinned)
             {
                 HideMemo();
             }
@@ -138,8 +141,15 @@ namespace PeekMemo
         }
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            isPinned = true;
-            ShowMemo();
+            if (appSettings.OpenMode == "Click")
+            {
+                isPinned = true;
+                ShowMemo();
+            }
+            else
+            {
+                isPinned = true;
+            }
         }
         private void MemoTextBox_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -149,29 +159,37 @@ namespace PeekMemo
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            SettingsWindow settingsWindow = new SettingsWindow(appSettings);
+            SettingsWindow settingsWindow = new SettingsWindow(appSettings, currentIndex);
 
             settingsWindow.Owner = this;
             settingsWindow.WindowStartupLocation = WindowStartupLocation.Manual;
-
             settingsWindow.Left = this.Left - settingsWindow.Width - 10;
             settingsWindow.Top = this.Top;
 
-            bool? result = settingsWindow.ShowDialog();
-
-            if (result == true)
+            settingsWindow.SettingsPreviewChanged += (previewSettings) =>
             {
+                appSettings = previewSettings;
                 ApplySettings();
-            }
+            };
+
+            settingsWindow.SettingsSaved += (savedSettings) =>
+            {
+                appSettings = savedSettings;
+                ApplySettings();
+            };
+
+            settingsWindow.Show();
         }
 
         private void ApplySettings()
         {
             MemoIndexSettings index1 = appSettings.Indexes[0];
             MemoIndexSettings index2 = appSettings.Indexes[1];
+            MemoIndexSettings index3 = appSettings.Indexes[2];
 
             MemoTabText1.Text = index1.Title;
             MemoTabText2.Text = index2.Title;
+            MemoTabText3.Text = index3.Title;
 
             Brush colorBrush1 =
                 (Brush)new BrushConverter().ConvertFromString(index1.Color);
@@ -179,8 +197,12 @@ namespace PeekMemo
             Brush colorBrush2 =
                 (Brush)new BrushConverter().ConvertFromString(index2.Color);
 
+            Brush colorBrush3 =
+                (Brush)new BrushConverter().ConvertFromString(index3.Color);
+
             MemoTabBorder1.Background = colorBrush1;
             MemoTabBorder2.Background = colorBrush2;
+            MemoTabBorder3.Background = colorBrush3;
 
             MemoIndexSettings currentIndexSetting = appSettings.Indexes[currentIndex];
 
@@ -188,6 +210,14 @@ namespace PeekMemo
                 (Brush)new BrushConverter().ConvertFromString(currentIndexSetting.Color);
 
             MemoBodyBorder.Background = currentColorBrush;
+
+            ApplyIndexLength();
+
+            MemoTabBorder3.Visibility =
+            appSettings.VisibleIndexCount >= 3
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+
         }
 
         private string GetCurrentMemoFileName()
@@ -204,6 +234,12 @@ namespace PeekMemo
         {
             SwitchMemo(1);
         }
+
+        private void MemoTab3_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            SwitchMemo(2);
+        }
+
         private void SwitchMemo(int index)
         {
             SaveMemo();
@@ -218,6 +254,42 @@ namespace PeekMemo
         private void SaveMemo()
         {
             File.WriteAllText(GetCurrentMemoFileName(), MemoTextBox.Text);
+        }
+
+        private void ApplyIndexLength()
+        {
+            double tabHeight;
+            double fontSize;
+
+            if (appSettings.IndexLength == "Short")
+            {
+                tabHeight = 90;
+                fontSize = 10;
+            }
+            else if (appSettings.IndexLength == "Long")
+            {
+                tabHeight = 150;
+                fontSize = 12;
+            }
+            else
+            {
+                tabHeight = 115;
+                fontSize = 11;
+            }
+
+            CornerRadius cornerRadius = new CornerRadius(18, 0, 0, 18);
+
+            MemoTabBorder1.Height = tabHeight;
+            MemoTabBorder2.Height = tabHeight;
+            MemoTabBorder3.Height = tabHeight;
+
+            MemoTabText1.FontSize = fontSize;
+            MemoTabText2.FontSize = fontSize;
+            MemoTabText3.FontSize = fontSize;
+
+            MemoTabBorder1.CornerRadius = cornerRadius;
+            MemoTabBorder2.CornerRadius = cornerRadius;
+            MemoTabBorder3.CornerRadius = cornerRadius;
         }
     }
 

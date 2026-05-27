@@ -10,6 +10,8 @@ namespace PeekMemo
         public string Alignment { get; set; } = "Center";
         public string IndexLength { get; set; } = "Medium";
 
+        public int VisibleIndexCount { get; set; } = 2;
+
         public List<MemoIndexSettings> Indexes { get; set; } = new List<MemoIndexSettings>();
     }
 }
