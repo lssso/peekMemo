@@ -2,159 +2,200 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="PeekMemo 설정"
-        Width="320"
+        Width="370"
         Height="420"
+        MinWidth="370"
         MinHeight="420"
-        SizeToContent="Height"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner">
 
-    <Border Background="White" Padding="20">
-        <StackPanel>
-            
-            <TextBlock
-                Text="PeekMemo 설정"
-                FontSize="22"
-                FontWeight="Bold"
-                Foreground="#333333"
-                Margin="0 0 0 18"/>
+    <Window.Resources>
+        <Style x:Key="ColorChipRadioStyle" TargetType="RadioButton">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border
+                        x:Name="ChipBorder"
+                        Width="32"
+                        Height="32"
+                        CornerRadius="16"
+                        BorderThickness="2"
+                        BorderBrush="Transparent"
+                        Background="Transparent">
+                            <ContentPresenter
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"/>
+                        </Border>
 
-            <Border
-                Background="#FFFFFF"
-                BorderBrush="#FFF5F5F5"
-                BorderThickness="1"
-                CornerRadius="12"
-                Padding="6"
-                Margin="0 0 0 18">      
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="ChipBorder" Property="BorderBrush" Value="#FF333333"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border Background="White" Padding="20">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0"
+                       Text="PeekMemo 설정"
+                       FontSize="22"
+                       FontWeight="Bold"
+                       Foreground="#333333"
+                       Margin="0 0 0 18"/>
+
+            <Border Grid.Row="1"
+                    Background="#FFFFFF"
+                    BorderBrush="#FFF5F5F5"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="6"
+                    Margin="0 0 0 18">
 
                 <StackPanel Orientation="Horizontal">
+                    <Button x:Name="SettingsTabButton"
+                            Content="설정"
+                            Height="34"
+                            Width="70"
+                            Margin="0 0 6 0"
+                            Background="#FFF5F5F5"
+                            BorderBrush="#FFE5E5E5"
+                            BorderThickness="1"
+                            FontWeight="Bold"
+                            Click="SettingsTabButton_Click"/>
 
-                    <Button
-                        x:Name="SettingsTabButton"
-                        Content="설정"
-                        Height="34"
-                        Width="70"
-                        Margin="0 0 6 0"
-                        Background="#FFF5F5F5"
-                        BorderBrush="#FFE5E5E5"
-                        BorderThickness="1"
-                        FontWeight="Bold"
-                        Click="SettingsTabButton_Click"/>
+                    <Button x:Name="IndexTabButton1"
+                            Content="업무"
+                            Height="34"
+                            Width="70"
+                            Margin="0 0 6 0"
+                            Background="#FFFFFF"
+                            BorderThickness="0"
+                            Click="IndexTabButton1_Click"/>
 
-                    <Button
-                        x:Name="IndexTabButton1"
-                        Content="업무"
-                        Height="34"
-                        Width="70"
-                        Margin="0 0 6 0"
-                        Background="#FFFFFF"
-                        BorderThickness="0"
-                        Click="IndexTabButton1_Click"/>
+                    <Button x:Name="IndexTabButton2"
+                            Content="개인"
+                            Height="34"
+                            Width="70"
+                            Margin="0 0 6 0"
+                            Background="#FFFFFF"
+                            BorderThickness="0"
+                            Click="IndexTabButton2_Click"/>
 
-                    <Button
-                        x:Name="IndexTabButton2"
-                        Content="개인"
-                        Height="34"
-                        Width="70"
-                        Margin="0 0 6 0"
-                        Background="#FFFFFF"
-                        BorderThickness="0"
-                        Click="IndexTabButton2_Click"/>
-
-                    <Button
-                        x:Name="AddIndexButton"
-                        Click="AddIndexButton_Click"
-            Content="+"
-            Height="34"
-            Width="34"
-            Background="#FFFFFF"
-            BorderBrush="#FFE5E5E5"
-            BorderThickness="1"
-            FontSize="18"
-            FontWeight="Bold"/>
-
+                    <Button x:Name="AddIndexButton"
+                            Content="+"
+                            Height="34"
+                            Width="70"
+                            Background="#FFFFFF"
+                            BorderThickness="0"
+                            FontSize="14"
+                            Click="AddIndexButton_Click"/>
                 </StackPanel>
-
             </Border>
 
+            <Grid Grid.Row="2">
                 <StackPanel x:Name="AppSettingsPanel">
                     <TextBlock Text="열기 방식" Margin="0 0 0 5"/>
 
-                    <ComboBox
-        x:Name="OpenModeComboBox"
-        Height="30"
-        Margin="0 0 0 15"
-        SelectionChanged="SettingValue_Changed"
-        SelectedIndex="0">
+                    <ComboBox x:Name="OpenModeComboBox"
+                              Height="30"
+                              Margin="0 0 0 15"
+                              SelectionChanged="SettingValue_Changed"
+                              SelectedIndex="0">
                         <ComboBoxItem Content="마우스오버"/>
                         <ComboBoxItem Content="클릭"/>
                     </ComboBox>
 
                     <TextBlock Text="인덱스 길이" Margin="0 0 0 5"/>
 
-                    <ComboBox
-        x:Name="IndexLengthComboBox"
-        Height="30"
-        Margin="0 0 0 18"
-         SelectionChanged="SettingValue_Changed"
-        SelectedIndex="1">
+                    <ComboBox x:Name="IndexLengthComboBox"
+                              Height="30"
+                              Margin="0 0 0 18"
+                              SelectionChanged="SettingValue_Changed"
+                              SelectedIndex="1">
                         <ComboBoxItem Content="짧게"/>
                         <ComboBoxItem Content="중간"/>
                         <ComboBoxItem Content="길게"/>
                     </ComboBox>
 
-                    <Button
-        Content="기본값으로 초기화"
-        Height="34"/>
+                    <Button Content="기본값으로 초기화"
+                            Height="34"/>
                 </StackPanel>
 
-                <StackPanel x:Name="IndexSettingsPanel" Visibility="Collapsed">
+                <StackPanel x:Name="IndexSettingsPanel"
+                            Visibility="Collapsed">
                     <TextBlock Text="인덱스 제목" Margin="0 0 0 5"/>
 
-                    <TextBox
-        x:Name="TitleTextBox"
-        MaxLength="6"
-        Height="30"
-        Text="업무"
-        Margin="0 0 0 18"
-        TextChanged="SettingValue_Changed" />
+                    <TextBox x:Name="TitleTextBox"
+                             MaxLength="6"
+                             Height="30"
+                             Text="업무"
+                             Margin="0 0 0 18"
+                             TextChanged="SettingValue_Changed"/>
 
                     <TextBlock Text="인덱스 색상" Margin="0 0 0 8"/>
 
-                <StackPanel
-            x:Name="ColorPanel"
-            Orientation="Horizontal"
-            Margin="0 0 0 22">
+                    <StackPanel x:Name="ColorPanel"
+                                Orientation="Horizontal"
+                                Margin="0 0 0 22">
 
-                            <RadioButton GroupName="MemoColor" Tag="#FFFFD54F" Margin="0 0 12 0" Checked="SettingValue_Changed">
-                                <Ellipse Width="24" Height="24" Fill="#FFFFD54F"/>
-                            </RadioButton>
+                        <RadioButton GroupName="MemoColor"
+                                     Tag="#FFFFD54F"
+                                     Margin="0 0 12 0"
+                                     Checked="SettingValue_Changed"
+                                     Style="{StaticResource ColorChipRadioStyle}">
+                            <Ellipse Width="24" Height="24" Fill="#FFFFD54F"/>
+                        </RadioButton>
 
-                            <RadioButton GroupName="MemoColor" Tag="#FFF8BBD0" Margin="0 0 12 0" Checked="SettingValue_Changed">
-                                <Ellipse Width="24" Height="24" Fill="#FFF8BBD0"/>
-                            </RadioButton>
+                        <RadioButton GroupName="MemoColor"
+                                     Tag="#FFF8BBD0"
+                                     Margin="0 0 12 0"
+                                     Checked="SettingValue_Changed"
+                                     Style="{StaticResource ColorChipRadioStyle}">
+                            <Ellipse Width="24" Height="24" Fill="#FFF8BBD0"/>
+                        </RadioButton>
 
-                            <RadioButton GroupName="MemoColor" Tag="#FFC8E6C9" Margin="0 0 12 0" Checked="SettingValue_Changed">
-                                <Ellipse Width="24" Height="24" Fill="#FFC8E6C9"/>
-                            </RadioButton>
+                        <RadioButton GroupName="MemoColor"
+                                     Tag="#FFC8E6C9"
+                                     Margin="0 0 12 0"
+                                     Checked="SettingValue_Changed"
+                                     Style="{StaticResource ColorChipRadioStyle}">
+                            <Ellipse Width="24" Height="24" Fill="#FFC8E6C9"/>
+                        </RadioButton>
 
-                            <RadioButton GroupName="MemoColor" Tag="#FFBBDEFB" Margin="0 0 12 0" Checked="SettingValue_Changed">
-                                <Ellipse Width="24" Height="24" Fill="#FFBBDEFB"/>
-                            </RadioButton>
+                        <RadioButton GroupName="MemoColor"
+                                     Tag="#FFBBDEFB"
+                                     Margin="0 0 12 0"
+                                     Checked="SettingValue_Changed"
+                                     Style="{StaticResource ColorChipRadioStyle}">
+                            <Ellipse Width="24" Height="24" Fill="#FFBBDEFB"/>
+                        </RadioButton>
 
-                            <RadioButton GroupName="MemoColor" Tag="#FFD1C4E9" Checked="SettingValue_Changed">
-                                <Ellipse Width="24" Height="24" Fill="#FFD1C4E9"/>
-                            </RadioButton>
+                        <RadioButton GroupName="MemoColor"
+                                     Tag="#FFD1C4E9"
+                                     Checked="SettingValue_Changed"
+                                     Style="{StaticResource ColorChipRadioStyle}">
+                            <Ellipse Width="24" Height="24" Fill="#FFD1C4E9"/>
+                        </RadioButton>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
 
-                        </StackPanel>
-            </StackPanel>
-
-
-            <Border
-    Background="#FFF3F3F3"
-    CornerRadius="12"
-    Padding="6"
-    Margin="0 20 0 0">
+            <Border Grid.Row="3"
+                    Background="#FFF3F3F3"
+                    CornerRadius="12"
+                    Padding="6"
+                    Margin="0 20 0 0">
 
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -163,26 +204,22 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Button
-            Grid.Column="0"
-            Content="저장"
-            Height="40"
-            Background="#FFFFD54F"
-            BorderThickness="0"
-            FontWeight="Bold"
-            Click="SaveButton_Click"/>
+                    <Button Grid.Column="0"
+                            Content="저장"
+                            Height="40"
+                            Background="#FFFFD54F"
+                            BorderThickness="0"
+                            FontWeight="Bold"
+                            Click="SaveButton_Click"/>
 
-                    <Button
-            Grid.Column="2"
-            Content="닫기"
-            Height="40"
-            Background="White"
-            BorderThickness="0"
-            Click="CloseButton_Click"/>
-
+                    <Button Grid.Column="2"
+                            Content="닫기"
+                            Height="40"
+                            Background="White"
+                            BorderThickness="0"
+                            Click="CloseButton_Click"/>
                 </Grid>
-
             </Border>
-        </StackPanel>
+        </Grid>
     </Border>
 </Window>

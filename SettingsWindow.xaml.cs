@@ -7,6 +7,7 @@ namespace PeekMemo
     {
         private AppSettings originalSettings;
         private AppSettings tempSettings;
+        private bool isLoadingSettings = false;
         private int selectedIndex = -1;
 
         public event System.Action<AppSettings> SettingsPreviewChanged;
@@ -27,6 +28,7 @@ namespace PeekMemo
             {
                 LoadIndexSettings(startIndex);
             }
+            UpdateAddButton();
         }
 
         private AppSettings CloneSettings(AppSettings source)
@@ -88,6 +90,8 @@ namespace PeekMemo
 
         private void LoadIndexSettings(int index)
         {
+            isLoadingSettings = true;
+
             selectedIndex = index;
 
             AppSettingsPanel.Visibility = Visibility.Collapsed;
@@ -95,7 +99,22 @@ namespace PeekMemo
 
             TitleTextBox.Text = tempSettings.Indexes[index].Title;
 
+            string currentColor = tempSettings.Indexes[index].Color;
+
+            foreach (var child in ColorPanel.Children)
+            {
+                RadioButton radioButton = child as RadioButton;
+
+                if (radioButton != null)
+                {
+                    radioButton.IsChecked =
+                        radioButton.Tag.ToString() == currentColor;
+                }
+            }
+
             UpdateSelectedTabStyle();
+
+            isLoadingSettings = false;
         }
 
         private void IndexTabButton1_Click(object sender, RoutedEventArgs e)
@@ -107,6 +126,11 @@ namespace PeekMemo
         {
             LoadIndexSettings(1);
         }
+        private void IndexTabButton3_Click(object sender, RoutedEventArgs e)
+        {
+            LoadIndexSettings(2);
+        }
+
         private void UpdateSelectedTabStyle()
         {
             var selectedBrush = (System.Windows.Media.Brush)
@@ -130,6 +154,11 @@ namespace PeekMemo
             IndexTabButton2.BorderBrush = borderBrush;
             IndexTabButton2.BorderThickness = selectedIndex == 1 ? new Thickness(1) : new Thickness(0);
             IndexTabButton2.FontWeight = selectedIndex == 1 ? FontWeights.Bold : FontWeights.Normal;
+
+            AddIndexButton.Background = selectedIndex == 2 ? selectedBrush : normalBrush;
+            AddIndexButton.BorderBrush = borderBrush;
+            AddIndexButton.BorderThickness = selectedIndex == 2 ? new Thickness(1) : new Thickness(0);
+            AddIndexButton.FontWeight = selectedIndex == 2 ? FontWeights.Bold : FontWeights.Normal;
         }
         private void LoadAppSettings()
         {
@@ -150,6 +179,10 @@ namespace PeekMemo
         }
         private void SettingValue_Changed(object sender, RoutedEventArgs e)
         {
+            if (isLoadingSettings)
+            {
+                return;
+            }
             if (tempSettings == null)
             {
                 return;
@@ -208,22 +241,39 @@ namespace PeekMemo
                 });
             }
         }
+        private void UpdateAddButton()
+        {
+            if (tempSettings.VisibleIndexCount >= 3)
+            {
+                AddIndexButton.Content = tempSettings.Indexes[2].Title;
 
+                AddIndexButton.Click -= AddIndexButton_Click;
+                AddIndexButton.Click -= IndexTabButton3_Click;
+                AddIndexButton.Click += IndexTabButton3_Click;
+            }
+            else
+            {
+                AddIndexButton.Content = "+";
+
+                AddIndexButton.Click -= IndexTabButton3_Click;
+                AddIndexButton.Click -= AddIndexButton_Click;
+                AddIndexButton.Click += AddIndexButton_Click;
+            }
+
+            UpdateSelectedTabStyle();
+        }
         private void AddIndexButton_Click(object sender, RoutedEventArgs e)
         {
             if (tempSettings.VisibleIndexCount < 3)
             {
                 tempSettings.VisibleIndexCount++;
 
-                CopySettings(tempSettings, originalSettings);
-                SettingsService.Save(originalSettings);
+                tempSettings.Indexes[2].Title = "인덱스명";
+                tempSettings.Indexes[2].Color = "#FFFFD54F";
+
+                UpdateAddButton();
 
                 SettingsPreviewChanged?.Invoke(tempSettings);
-                CopySettings(tempSettings, originalSettings);
-                SettingsService.Save(originalSettings);
-                SettingsSaved?.Invoke(originalSettings);
-
-                MessageBox.Show("인덱스가 추가되었습니다.");
             }
             else
             {
