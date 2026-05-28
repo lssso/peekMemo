@@ -17,6 +17,9 @@ namespace PeekMemo
         private AppSettings appSettings;
         private bool isPinnedMode = false;
         private SettingsWindow openedSettingsWindow;
+        private bool isResizingHeight = false;
+        private Point resizeStartPoint;
+        private double resizeStartHeight;
 
         public MainWindow()
         {
@@ -34,6 +37,10 @@ namespace PeekMemo
             ApplySettings();
 
             LoadMemo();
+
+            this.MinHeight = 300;
+            this.MaxWidth = this.Width;
+            this.MinWidth = this.Width;
         }
 
         private DispatcherTimer saveTimer;
@@ -257,14 +264,16 @@ namespace PeekMemo
 
             MemoBodyBorder.Background = currentColorBrush;
 
-            ApplyIndexLength();
-
+           
             MemoTabBorder3.Visibility =
             appSettings.VisibleIndexCount >= 3
             ? Visibility.Visible
             : Visibility.Collapsed;
 
+            ApplyIndexLength();
             ApplyEdgeLayout();
+
+            isPinned = false;
             SetWindowPositionInstant();
         }
 
@@ -390,16 +399,19 @@ namespace PeekMemo
 
             if (appSettings.Edge == "Left")
             {
+                // 좌측: 오른쪽 탭 32px만 보이게
                 this.Left = workArea.Left - this.Width + 32;
                 this.Top = workArea.Top + (workArea.Height - this.Height) / 2;
             }
             else if (appSettings.Edge == "Top")
             {
+                // 상단: 아래쪽 32px만 보이게
                 this.Left = workArea.Left + (workArea.Width - this.Width) / 2;
                 this.Top = workArea.Top - this.Height + 32;
             }
             else
             {
+                // 우측: 왼쪽 탭 32px만 보이게
                 this.Left = workArea.Right - 32;
                 this.Top = workArea.Top + (workArea.Height - this.Height) / 2;
             }
@@ -409,24 +421,70 @@ namespace PeekMemo
         {
             if (appSettings.Edge == "Left")
             {
-                Grid.SetColumn(MemoBodyBorder, 0);
+                // 좌측 배치: [메모][탭]
+                Grid.SetColumn(MemoBodyContainer, 0);
                 Grid.SetColumn(MemoTabsPanel, 1);
 
                 TabColumn.Width = new GridLength(1, GridUnitType.Star);
                 MemoColumn.Width = new GridLength(32);
 
                 MemoBodyBorder.CornerRadius = new CornerRadius(20, 0, 0, 20);
+                SetTabCornerRadius(new CornerRadius(0, 20, 20, 0));
             }
             else
             {
+                // 우측 배치: [탭][메모]
                 Grid.SetColumn(MemoTabsPanel, 0);
-                Grid.SetColumn(MemoBodyBorder, 1);
+                Grid.SetColumn(MemoBodyContainer, 1);
 
                 TabColumn.Width = new GridLength(32);
                 MemoColumn.Width = new GridLength(1, GridUnitType.Star);
 
                 MemoBodyBorder.CornerRadius = new CornerRadius(0, 20, 20, 0);
+                SetTabCornerRadius(new CornerRadius(20, 0, 0, 20));
             }
+        }
+
+        private void SetTabCornerRadius(CornerRadius cornerRadius)
+        {
+            MemoTabBorder1.CornerRadius = cornerRadius;
+            MemoTabBorder2.CornerRadius = cornerRadius;
+            MemoTabBorder3.CornerRadius = cornerRadius;
+        }
+
+        private void ResizeBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            isResizingHeight = true;
+            resizeStartPoint = e.GetPosition(null);
+            resizeStartHeight = this.Height;
+
+            Mouse.Capture((IInputElement)sender);
+        }
+
+        private void ResizeBar_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!isResizingHeight)
+            {
+                return;
+            }
+
+            Point currentPoint = e.GetPosition(null);
+            double deltaY = currentPoint.Y - resizeStartPoint.Y;
+
+            double newHeight = resizeStartHeight + deltaY;
+
+            if (newHeight < 300)
+            {
+                newHeight = 300;
+            }
+
+            this.Height = newHeight;
+        }
+
+        private void ResizeBar_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            isResizingHeight = false;
+            Mouse.Capture(null);
         }
     }
 

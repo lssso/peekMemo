@@ -7,7 +7,7 @@
         MinHeight="520"
         MinWidth="300"
         Topmost="True"
-        ResizeMode="NoResize"
+        ResizeMode="CanResizeWithGrip"
         WindowStartupLocation="Manual"
         Loaded="Window_Loaded"
         PreviewKeyDown="Window_KeyDown"
@@ -25,26 +25,30 @@
             <ColumnDefinition x:Name="MemoColumn" Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Border
+        <Grid
+    Grid.Column="1"
+    x:Name="MemoBodyContainer">
+
+            <Border
         x:Name="MemoBodyBorder"
         Grid.Column="1"
         Background="#FFF8BBD0"
         CornerRadius="0 20 20 0"
         Padding="15">
 
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                <DockPanel Grid.Row="0" Margin="0 0 0 10">
-                    <StackPanel
+                    <DockPanel Grid.Row="0" Margin="0 0 0 10">
+                        <StackPanel
                         Orientation="Horizontal"
                         DockPanel.Dock="Right">
 
-                                        <Button
+                            <Button
                             x:Name="PinButton"
                             Content="📌"
                             Width="28"
@@ -52,22 +56,22 @@
                             Margin="0 0 6 0"
                             Click="PinButton_Click"/>
 
-                                        <Button
+                            <Button
                             Content="⚙"
                             Width="28"
                             Height="28"
                             Click="SettingsButton_Click"/>
-                                    </StackPanel>
+                        </StackPanel>
 
-                                    <TextBlock
+                        <TextBlock
                         Text="PeekMemo"
                         FontSize="22"
                         FontWeight="Bold"
                         Foreground="#333333"
                         HorizontalAlignment="Center"/>
-                </DockPanel>
+                    </DockPanel>
 
-                <TextBox
+                    <TextBox
                 x:Name="MemoTextBox"
                 Grid.Row="1"
                 FontSize="15"
@@ -80,7 +84,7 @@
                 TextChanged="MemoTextBox_TextChanged"
                 PreviewMouseLeftButtonDown="MemoTextBox_PreviewMouseLeftButtonDown"/>
 
-                        <TextBlock
+                    <TextBlock
                 x:Name="SaveStatusText"
                 Grid.Row="2"
                 Text="아직 저장되지 않음"
@@ -88,9 +92,18 @@
                 Foreground="#777777"
                 Margin="0 8 0 0"
                 HorizontalAlignment="Right"/>
-                    </Grid>
 
-        </Border>
+                </Grid>
+            </Border>
+            <Border
+                Height="10"
+                VerticalAlignment="Bottom"
+                Background="Transparent"
+                Cursor="SizeNS"
+                MouseLeftButtonDown="ResizeBar_MouseLeftButtonDown"
+                MouseMove="ResizeBar_MouseMove"
+                MouseLeftButtonUp="ResizeBar_MouseLeftButtonUp"/>
+        </Grid>
 
         <StackPanel Grid.Column="0" VerticalAlignment="Center" x:Name="MemoTabsPanel">
 
