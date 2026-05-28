@@ -207,6 +207,8 @@ namespace PeekMemo
 
             ApplyCurrentSettingsToObject();
 
+            UpdateAddButton();
+
             SettingsPreviewChanged?.Invoke(tempSettings);
         }
 
@@ -264,6 +266,9 @@ namespace PeekMemo
         }
         private void UpdateAddButton()
         {
+            IndexTabButton1.Content = tempSettings.Indexes[0].Title;
+            IndexTabButton2.Content = tempSettings.Indexes[1].Title;
+
             if (tempSettings.VisibleIndexCount >= 3)
             {
                 AddIndexButton.Content = tempSettings.Indexes[2].Title;
