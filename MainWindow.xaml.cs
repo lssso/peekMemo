@@ -2,10 +2,11 @@
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
-using System.Windows.Media;
 
 namespace PeekMemo
 {
@@ -14,10 +15,15 @@ namespace PeekMemo
         private int currentIndex = 0;
         private bool isPinned = false;
         private AppSettings appSettings;
-        
+        private bool isPinnedMode = false;
+        private SettingsWindow openedSettingsWindow;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            PinButton.Content = "📌";
+            PinButton.Opacity = 0.6;
 
             saveTimer = new DispatcherTimer();
             saveTimer.Interval = TimeSpan.FromSeconds(1);
@@ -34,7 +40,7 @@ namespace PeekMemo
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Escape)
+            if (e.Key == Key.Escape && !isPinnedMode)
             {
                 isPinned = false;
                 HideMemo();
@@ -107,7 +113,9 @@ namespace PeekMemo
 
         private void Window_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (appSettings.OpenMode == "Hover" && !isPinned)
+            if (appSettings.OpenMode == "Hover"
+                && !isPinned
+                && !isPinnedMode)
             {
                 HideMemo();
             }
@@ -117,19 +125,46 @@ namespace PeekMemo
         {
             var workArea = SystemParameters.WorkArea;
 
-            // 전체 창이 보이게
-            AnimateWindow(workArea.Right - this.Width);
-            this.Top = workArea.Top + (workArea.Height - this.Height) / 2;
+            if (appSettings.Edge == "Left")
+            {
+                AnimateWindow(workArea.Left);
+                this.Top = workArea.Top + (workArea.Height - this.Height) / 2;
+            }
+            else if (appSettings.Edge == "Top")
+            {
+                this.BeginAnimation(Window.LeftProperty, null);
+                this.Left = workArea.Left + (workArea.Width - this.Width) / 2;
+                AnimateTop(workArea.Top);
+            }
+            else
+            {
+                AnimateWindow(workArea.Right - this.Width);
+                this.Top = workArea.Top + (workArea.Height - this.Height) / 2;
+            }
         }
 
         private void HideMemo()
         {
             var workArea = SystemParameters.WorkArea;
 
-            // 탭 40px만 보이게
-            AnimateWindow(workArea.Right - 32);
-            this.Top = workArea.Top + (workArea.Height - this.Height) / 2;
+            if (appSettings.Edge == "Left")
+            {
+                AnimateWindow(workArea.Left - this.Width + 32);
+                this.Top = workArea.Top + (workArea.Height - this.Height) / 2;
+            }
+            else if (appSettings.Edge == "Top")
+            {
+                this.BeginAnimation(Window.LeftProperty, null);
+                this.Left = workArea.Left + (workArea.Width - this.Width) / 2;
+                AnimateTop(workArea.Top - this.Height + 32);
+            }
+            else
+            {
+                AnimateWindow(workArea.Right - 32);
+                this.Top = workArea.Top + (workArea.Height - this.Height) / 2;
+            }
         }
+
         private void AnimateWindow(double targetLeft)
         {
             DoubleAnimation animation = new DoubleAnimation();
@@ -159,7 +194,14 @@ namespace PeekMemo
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            SettingsWindow settingsWindow = new SettingsWindow(appSettings, currentIndex);
+            if (openedSettingsWindow != null)
+            {
+                openedSettingsWindow.Activate();
+                return;
+            }
+            openedSettingsWindow = new SettingsWindow(appSettings, currentIndex);
+
+            SettingsWindow settingsWindow = openedSettingsWindow;
 
             settingsWindow.Owner = this;
             settingsWindow.WindowStartupLocation = WindowStartupLocation.Manual;
@@ -178,6 +220,10 @@ namespace PeekMemo
                 ApplySettings();
             };
 
+            settingsWindow.Closed += (s, args) =>
+            {
+                openedSettingsWindow = null;
+            };
             settingsWindow.Show();
         }
 
@@ -218,6 +264,8 @@ namespace PeekMemo
             ? Visibility.Visible
             : Visibility.Collapsed;
 
+            ApplyEdgeLayout();
+            SetWindowPositionInstant();
         }
 
         private string GetCurrentMemoFileName()
@@ -290,6 +338,95 @@ namespace PeekMemo
             MemoTabBorder1.CornerRadius = cornerRadius;
             MemoTabBorder2.CornerRadius = cornerRadius;
             MemoTabBorder3.CornerRadius = cornerRadius;
+        }
+
+        private void PinButton_Click(object sender, RoutedEventArgs e)
+        {
+            isPinnedMode = !isPinnedMode;
+
+            if (isPinnedMode)
+            {
+                PinButton.Content = "📍";
+                PinButton.Opacity = 1.0;
+                PinButton.Background = Brushes.LightGoldenrodYellow;
+
+                isPinned = true;
+                ShowMemo();
+            }
+            else
+            {
+                PinButton.Content = "📌";
+                PinButton.Opacity = 0.6;
+                PinButton.Background = Brushes.White;
+
+                isPinned = false;
+            }
+        }
+
+        private void Window_Deactivated(object sender, EventArgs e)
+        {
+            if (!isPinnedMode)
+            {
+                isPinned = false;
+                HideMemo();
+            }
+        }
+
+        private void AnimateTop(double targetTop)
+        {
+            DoubleAnimation animation = new DoubleAnimation();
+
+            animation.To = targetTop;
+            animation.Duration = TimeSpan.FromMilliseconds(300);
+
+            this.BeginAnimation(Window.TopProperty, animation);
+        }
+        private void SetWindowPositionInstant()
+        {
+            var workArea = SystemParameters.WorkArea;
+
+            this.BeginAnimation(Window.LeftProperty, null);
+            this.BeginAnimation(Window.TopProperty, null);
+
+            if (appSettings.Edge == "Left")
+            {
+                this.Left = workArea.Left - this.Width + 32;
+                this.Top = workArea.Top + (workArea.Height - this.Height) / 2;
+            }
+            else if (appSettings.Edge == "Top")
+            {
+                this.Left = workArea.Left + (workArea.Width - this.Width) / 2;
+                this.Top = workArea.Top - this.Height + 32;
+            }
+            else
+            {
+                this.Left = workArea.Right - 32;
+                this.Top = workArea.Top + (workArea.Height - this.Height) / 2;
+            }
+        }
+
+        private void ApplyEdgeLayout()
+        {
+            if (appSettings.Edge == "Left")
+            {
+                Grid.SetColumn(MemoBodyBorder, 0);
+                Grid.SetColumn(MemoTabsPanel, 1);
+
+                TabColumn.Width = new GridLength(1, GridUnitType.Star);
+                MemoColumn.Width = new GridLength(32);
+
+                MemoBodyBorder.CornerRadius = new CornerRadius(20, 0, 0, 20);
+            }
+            else
+            {
+                Grid.SetColumn(MemoTabsPanel, 0);
+                Grid.SetColumn(MemoBodyBorder, 1);
+
+                TabColumn.Width = new GridLength(32);
+                MemoColumn.Width = new GridLength(1, GridUnitType.Star);
+
+                MemoBodyBorder.CornerRadius = new CornerRadius(0, 20, 20, 0);
+            }
         }
     }
 

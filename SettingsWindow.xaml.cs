@@ -1,5 +1,10 @@
-﻿using System.Windows;
+﻿using System;
+using System;
+using System.IO;
+using System.IO;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace PeekMemo
 {
@@ -176,6 +181,18 @@ namespace PeekMemo
             {
                 IndexLengthComboBox.SelectedIndex = 1;
             }
+            if (tempSettings.Edge == "Left")
+            {
+                EdgeComboBox.SelectedIndex = 0;
+            }
+            else if (tempSettings.Edge == "Top")
+            {
+                EdgeComboBox.SelectedIndex = 2;
+            }
+            else
+            {
+                EdgeComboBox.SelectedIndex = 1;
+            }
         }
         private void SettingValue_Changed(object sender, RoutedEventArgs e)
         {
@@ -203,6 +220,10 @@ namespace PeekMemo
                 tempSettings.IndexLength =
                     IndexLengthComboBox.SelectedIndex == 0 ? "Short" :
                     IndexLengthComboBox.SelectedIndex == 1 ? "Medium" : "Long";
+
+                tempSettings.Edge =
+                    EdgeComboBox.SelectedIndex == 0 ? "Left" :
+                    EdgeComboBox.SelectedIndex == 2 ? "Top" : "Right";
             }
             else
             {
@@ -247,6 +268,12 @@ namespace PeekMemo
             {
                 AddIndexButton.Content = tempSettings.Indexes[2].Title;
 
+                AddIndexButton.Width = 70;
+                AddIndexButton.FontSize = 14;
+                AddIndexButton.FontWeight = FontWeights.Normal;
+                AddIndexButton.Background = Brushes.White;
+                AddIndexButton.BorderThickness = new Thickness(0);
+
                 AddIndexButton.Click -= AddIndexButton_Click;
                 AddIndexButton.Click -= IndexTabButton3_Click;
                 AddIndexButton.Click += IndexTabButton3_Click;
@@ -254,6 +281,10 @@ namespace PeekMemo
             else
             {
                 AddIndexButton.Content = "+";
+
+                AddIndexButton.Width = 34;
+                AddIndexButton.FontSize = 18;
+                AddIndexButton.FontWeight = FontWeights.Bold;
 
                 AddIndexButton.Click -= IndexTabButton3_Click;
                 AddIndexButton.Click -= AddIndexButton_Click;
@@ -273,12 +304,87 @@ namespace PeekMemo
 
                 UpdateAddButton();
 
+                LoadIndexSettings(2);
+
                 SettingsPreviewChanged?.Invoke(tempSettings);
             }
             else
             {
                 MessageBox.Show("인덱스는 최대 3개까지 추가할 수 있습니다.");
             }
+        }
+
+        private void DeleteIndexButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (tempSettings.VisibleIndexCount <= 1)
+            {
+                MessageBox.Show("인덱스는 최소 1개 이상 있어야 합니다.");
+                return;
+            }
+
+            if (selectedIndex < 0)
+            {
+                return;
+            }
+
+            string memoFileName = tempSettings.Indexes[selectedIndex].MemoFileName;
+
+            if (File.Exists(memoFileName))
+            {
+                string deletedFolder = "deleted";
+
+                if (!Directory.Exists(deletedFolder))
+                {
+                    Directory.CreateDirectory(deletedFolder);
+                }
+
+                string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+
+                string deletedFileName =
+                    Path.GetFileNameWithoutExtension(memoFileName)
+                    + "_"
+                    + timestamp
+                    + ".txt";
+
+                string deletedPath = Path.Combine(deletedFolder, deletedFileName);
+
+                File.Move(memoFileName, deletedPath);
+            }
+
+            tempSettings.Indexes.RemoveAt(selectedIndex);
+            tempSettings.VisibleIndexCount--;
+
+            while (tempSettings.Indexes.Count < 3)
+            {
+                tempSettings.Indexes.Add(new MemoIndexSettings
+                {
+                    Title = "인덱스명",
+                    Color = "#FFFFD54F",
+                    HotKey = "",
+                    MemoFileName = $"memo{tempSettings.Indexes.Count + 1}.txt"
+                });
+            }
+
+            CopySettings(tempSettings, originalSettings);
+            SettingsService.Save(originalSettings);
+
+            SettingsSaved?.Invoke(originalSettings);
+
+            int nextIndex = selectedIndex;
+
+            if (nextIndex >= tempSettings.VisibleIndexCount)
+            {
+                nextIndex = tempSettings.VisibleIndexCount - 1;
+            }
+
+            UpdateAddButton();
+            LoadIndexSettings(nextIndex);
+
+            SettingsPreviewChanged?.Invoke(tempSettings);
+            SettingsSaved?.Invoke(originalSettings);
+
+            MessageBox.Show("인덱스가 삭제되었습니다.");
+
         }
 
     }

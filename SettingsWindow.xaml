@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="PeekMemo 설정"
         Width="370"
-        Height="420"
+        Height="470"
         MinWidth="370"
-        MinHeight="420"
+        MinHeight="470"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner">
 
@@ -111,6 +111,7 @@
                               Height="30"
                               Margin="0 0 0 15"
                               SelectionChanged="SettingValue_Changed"
+                              VerticalContentAlignment="Center"
                               SelectedIndex="0">
                         <ComboBoxItem Content="마우스오버"/>
                         <ComboBoxItem Content="클릭"/>
@@ -121,6 +122,7 @@
                     <ComboBox x:Name="IndexLengthComboBox"
                               Height="30"
                               Margin="0 0 0 18"
+                              VerticalContentAlignment="Center"
                               SelectionChanged="SettingValue_Changed"
                               SelectedIndex="1">
                         <ComboBoxItem Content="짧게"/>
@@ -128,8 +130,27 @@
                         <ComboBoxItem Content="길게"/>
                     </ComboBox>
 
-                    <Button Content="기본값으로 초기화"
-                            Height="34"/>
+                    <TextBlock Text="표시 위치" Margin="0 0 0 5"/>
+
+                    <ComboBox
+                        x:Name="EdgeComboBox"
+                        Height="30"
+                        Margin="0 0 0 18"
+                        SelectionChanged="SettingValue_Changed"
+                        VerticalContentAlignment="Center"
+                        SelectedIndex="1">
+                        <ComboBoxItem Content="좌측"/>
+                        <ComboBoxItem Content="우측"/>
+                        <ComboBoxItem Content="상단"/>
+                    </ComboBox>
+
+                    <Button
+                        Content="기본값으로 초기화"
+                        Height="34"
+                        Background="#FFF5F5F5"
+                        BorderThickness="0"
+                        Foreground="#555555"
+                        FontWeight="SemiBold"/>
                 </StackPanel>
 
                 <StackPanel x:Name="IndexSettingsPanel"
@@ -141,6 +162,7 @@
                              Height="30"
                              Text="업무"
                              Margin="0 0 0 18"
+                             VerticalContentAlignment="Center"
                              TextChanged="SettingValue_Changed"/>
 
                     <TextBlock Text="인덱스 색상" Margin="0 0 0 8"/>
@@ -188,6 +210,14 @@
                             <Ellipse Width="24" Height="24" Fill="#FFD1C4E9"/>
                         </RadioButton>
                     </StackPanel>
+                    <Button
+                        Content="인덱스 삭제"
+                        Height="34"
+                        Background="#FFFFE5E5"
+                        BorderThickness="0"
+                        Foreground="#CC3333"
+                        FontWeight="Bold"
+                        Click="DeleteIndexButton_Click"/>
                 </StackPanel>
             </Grid>
 
