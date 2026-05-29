@@ -209,6 +209,12 @@ namespace PeekMemo
 
             UpdateAddButton();
 
+            //잠시 설정 미리보기 off
+            if(sender == EdgeComboBox)
+            {
+                return;
+            }
+
             SettingsPreviewChanged?.Invoke(tempSettings);
         }
 

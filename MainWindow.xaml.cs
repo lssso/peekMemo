@@ -212,7 +212,14 @@ namespace PeekMemo
 
             settingsWindow.Owner = this;
             settingsWindow.WindowStartupLocation = WindowStartupLocation.Manual;
-            settingsWindow.Left = this.Left - settingsWindow.Width - 10;
+            if (appSettings.Edge == "Left")
+            {
+                settingsWindow.Left = this.Left + this.Width + 10;
+            }
+            else
+            {
+                settingsWindow.Left = this.Left - settingsWindow.Width - 10;
+            }
             settingsWindow.Top = this.Top;
 
             settingsWindow.SettingsPreviewChanged += (previewSettings) =>
@@ -305,7 +312,34 @@ namespace PeekMemo
 
             LoadMemo();
 
-            ApplySettings();
+            ApplySettingsWithoutMoving();
+        }
+
+        private void ApplySettingsWithoutMoving()
+        {
+            ApplyIndexLength();
+            ApplyEdgeLayout();
+
+            MemoIndexSettings index1 = appSettings.Indexes[0];
+            MemoIndexSettings index2 = appSettings.Indexes[1];
+            MemoIndexSettings index3 = appSettings.Indexes[2];
+
+            MemoTabText1.Text = index1.Title;
+            MemoTabText2.Text = index2.Title;
+            MemoTabText3.Text = index3.Title;
+
+            Brush colorBrush1 = (Brush)new BrushConverter().ConvertFromString(index1.Color);
+            Brush colorBrush2 = (Brush)new BrushConverter().ConvertFromString(index2.Color);
+            Brush colorBrush3 = (Brush)new BrushConverter().ConvertFromString(index3.Color);
+
+            MemoTabBorder1.Background = colorBrush1;
+            MemoTabBorder2.Background = colorBrush2;
+            MemoTabBorder3.Background = colorBrush3;
+
+            MemoIndexSettings currentIndexSetting = appSettings.Indexes[currentIndex];
+            Brush currentColorBrush = (Brush)new BrushConverter().ConvertFromString(currentIndexSetting.Color);
+
+            MemoBodyBorder.Background = currentColorBrush;
         }
 
         private void SaveMemo()
