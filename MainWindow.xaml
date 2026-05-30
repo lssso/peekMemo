@@ -7,7 +7,7 @@
         MinHeight="520"
         MinWidth="300"
         Topmost="True"
-        ResizeMode="CanResizeWithGrip"
+        ResizeMode="NoResize"
         WindowStartupLocation="Manual"
         Loaded="Window_Loaded"
         PreviewKeyDown="Window_KeyDown"
@@ -15,14 +15,17 @@
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent">
+
+   
+    
     <Grid Background="Transparent"
       MouseEnter="Window_MouseEnter"
       MouseLeave="Window_MouseLeave"
       MouseLeftButtonDown="Window_MouseLeftButtonDown">
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="TabColumn" Width="32"/>
-            <ColumnDefinition x:Name="MemoColumn" Width="*"/>
+            <ColumnDefinition x:Name="LeftColumn" Width="32"/>
+            <ColumnDefinition x:Name="RightColumn" Width="*"/>
         </Grid.ColumnDefinitions>
 
         <Grid
@@ -31,7 +34,7 @@
 
             <Border
         x:Name="MemoBodyBorder"
-        Grid.Column="1"
+        Grid.Row="0"
         Background="#FFF8BBD0"
         CornerRadius="0 20 20 0"
         Padding="15">
@@ -95,7 +98,9 @@
 
                 </Grid>
             </Border>
+
             <Border
+                x:Name="ResizeBar"
                 Height="10"
                 VerticalAlignment="Bottom"
                 Background="Transparent"

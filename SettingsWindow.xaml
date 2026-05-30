@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="PeekMemo 설정"
         Width="370"
-        Height="470"
+        Height="600"
         MinWidth="370"
-        MinHeight="470"
+        MinHeight="600"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner">
 
@@ -141,9 +141,22 @@
                         SelectedIndex="1">
                         <ComboBoxItem Content="좌측"/>
                         <ComboBoxItem Content="우측"/>
-                        <ComboBoxItem Content="상단"/>
                     </ComboBox>
 
+                    <TextBlock Text="세로 위치" Margin="0 0 0 5"/>
+
+                    <ComboBox
+                    x:Name="AlignmentComboBox"
+                    Height="30"
+                    Margin="0 0 0 18"
+                    SelectionChanged="SettingValue_Changed"
+                    VerticalContentAlignment="Center"
+                    SelectedIndex="1">
+                        <ComboBoxItem Content="상단"/>
+                        <ComboBoxItem Content="중간"/>
+                        <ComboBoxItem Content="하단"/>
+                    </ComboBox>
+                    
                     <Button
                         Content="기본값으로 초기화"
                         Height="34"

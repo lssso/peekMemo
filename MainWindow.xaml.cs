@@ -97,17 +97,15 @@ namespace PeekMemo
         }
 
         private void SetWindowPosition()
-        {
-            //var workArea = SystemParameters.WorkArea;
-
-            //this.Left = workArea.Right - 40;
-            //this.Top = workArea.Top + (workArea.Height - this.Height) / 2;
+        { 
             HideMemo();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             SetWindowPosition();
+
+            ApplySettingsWithoutMoving();
         }
 
         private void Window_MouseEnter(object sender, MouseEventArgs e)
@@ -135,18 +133,12 @@ namespace PeekMemo
             if (appSettings.Edge == "Left")
             {
                 AnimateWindow(workArea.Left);
-                this.Top = workArea.Top + (workArea.Height - this.Height) / 2;
-            }
-            else if (appSettings.Edge == "Top")
-            {
-                this.BeginAnimation(Window.LeftProperty, null);
-                this.Left = workArea.Left + (workArea.Width - this.Width) / 2;
-                AnimateTop(workArea.Top);
+                this.Top = GetTopByAlignment();
             }
             else
             {
                 AnimateWindow(workArea.Right - this.Width);
-                this.Top = workArea.Top + (workArea.Height - this.Height) / 2;
+                this.Top = GetTopByAlignment();
             }
         }
 
@@ -157,18 +149,12 @@ namespace PeekMemo
             if (appSettings.Edge == "Left")
             {
                 AnimateWindow(workArea.Left - this.Width + 32);
-                this.Top = workArea.Top + (workArea.Height - this.Height) / 2;
-            }
-            else if (appSettings.Edge == "Top")
-            {
-                this.BeginAnimation(Window.LeftProperty, null);
-                this.Left = workArea.Left + (workArea.Width - this.Width) / 2;
-                AnimateTop(workArea.Top - this.Height + 32);
+                this.Top = GetTopByAlignment();
             }
             else
             {
                 AnimateWindow(workArea.Right - 32);
-                this.Top = workArea.Top + (workArea.Height - this.Height) / 2;
+                this.Top = GetTopByAlignment();
             }
         }
 
@@ -277,6 +263,7 @@ namespace PeekMemo
             ? Visibility.Visible
             : Visibility.Collapsed;
 
+
             ApplyIndexLength();
             ApplyEdgeLayout();
 
@@ -303,6 +290,7 @@ namespace PeekMemo
         {
             SwitchMemo(2);
         }
+
 
         private void SwitchMemo(int index)
         {
@@ -415,15 +403,6 @@ namespace PeekMemo
             }
         }
 
-        private void AnimateTop(double targetTop)
-        {
-            DoubleAnimation animation = new DoubleAnimation();
-
-            animation.To = targetTop;
-            animation.Duration = TimeSpan.FromMilliseconds(300);
-
-            this.BeginAnimation(Window.TopProperty, animation);
-        }
         private void SetWindowPositionInstant()
         {
             var workArea = SystemParameters.WorkArea;
@@ -433,21 +412,13 @@ namespace PeekMemo
 
             if (appSettings.Edge == "Left")
             {
-                // 좌측: 오른쪽 탭 32px만 보이게
                 this.Left = workArea.Left - this.Width + 32;
-                this.Top = workArea.Top + (workArea.Height - this.Height) / 2;
-            }
-            else if (appSettings.Edge == "Top")
-            {
-                // 상단: 아래쪽 32px만 보이게
-                this.Left = workArea.Left + (workArea.Width - this.Width) / 2;
-                this.Top = workArea.Top - this.Height + 32;
+                this.Top = GetTopByAlignment();
             }
             else
             {
-                // 우측: 왼쪽 탭 32px만 보이게
                 this.Left = workArea.Right - 32;
-                this.Top = workArea.Top + (workArea.Height - this.Height) / 2;
+                this.Top = GetTopByAlignment();
             }
         }
 
@@ -455,27 +426,33 @@ namespace PeekMemo
         {
             if (appSettings.Edge == "Left")
             {
-                // 좌측 배치: [메모][탭]
+              
+                // 좌측: [메모][탭]
                 Grid.SetColumn(MemoBodyContainer, 0);
                 Grid.SetColumn(MemoTabsPanel, 1);
 
-                TabColumn.Width = new GridLength(1, GridUnitType.Star);
-                MemoColumn.Width = new GridLength(32);
+                LeftColumn.Width = new GridLength(1, GridUnitType.Star);
+                RightColumn.Width = new GridLength(32);
 
                 MemoBodyBorder.CornerRadius = new CornerRadius(20, 0, 0, 20);
                 SetTabCornerRadius(new CornerRadius(0, 20, 20, 0));
-            }
-            else
+
+                MemoTabsPanel.LayoutTransform = null;
+                MemoTabsPanel.VerticalAlignment = VerticalAlignment.Center;
+            } else
             {
-                // 우측 배치: [탭][메모]
+                // 우측: [탭][메모]
                 Grid.SetColumn(MemoTabsPanel, 0);
                 Grid.SetColumn(MemoBodyContainer, 1);
 
-                TabColumn.Width = new GridLength(32);
-                MemoColumn.Width = new GridLength(1, GridUnitType.Star);
+                LeftColumn.Width = new GridLength(32);
+                RightColumn.Width = new GridLength(1, GridUnitType.Star);
 
                 MemoBodyBorder.CornerRadius = new CornerRadius(0, 20, 20, 0);
                 SetTabCornerRadius(new CornerRadius(20, 0, 0, 20));
+
+                MemoTabsPanel.LayoutTransform = null;
+                MemoTabsPanel.VerticalAlignment = VerticalAlignment.Center;
             }
         }
 
@@ -519,6 +496,23 @@ namespace PeekMemo
         {
             isResizingHeight = false;
             Mouse.Capture(null);
+        }
+
+        private double GetTopByAlignment()
+        {
+            var workArea = SystemParameters.WorkArea;
+
+            if (appSettings.Alignment == "Top")
+            {
+                return workArea.Top + 40;
+            }
+
+            if (appSettings.Alignment == "Bottom")
+            {
+                return workArea.Bottom - this.Height - 40;
+            }
+
+            return workArea.Top + (workArea.Height - this.Height) / 2;
         }
     }
 

@@ -1,6 +1,4 @@
 ﻿using System;
-using System;
-using System.IO;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -185,13 +183,21 @@ namespace PeekMemo
             {
                 EdgeComboBox.SelectedIndex = 0;
             }
-            else if (tempSettings.Edge == "Top")
-            {
-                EdgeComboBox.SelectedIndex = 2;
-            }
             else
             {
                 EdgeComboBox.SelectedIndex = 1;
+            }
+            if (tempSettings.Alignment == "Top")
+            {
+                AlignmentComboBox.SelectedIndex = 0;
+            }
+            else if (tempSettings.Alignment == "Bottom")
+            {
+                AlignmentComboBox.SelectedIndex = 2;
+            }
+            else
+            {
+                AlignmentComboBox.SelectedIndex = 1;
             }
         }
         private void SettingValue_Changed(object sender, RoutedEventArgs e)
@@ -230,8 +236,11 @@ namespace PeekMemo
                     IndexLengthComboBox.SelectedIndex == 1 ? "Medium" : "Long";
 
                 tempSettings.Edge =
-                    EdgeComboBox.SelectedIndex == 0 ? "Left" :
-                    EdgeComboBox.SelectedIndex == 2 ? "Top" : "Right";
+                    EdgeComboBox.SelectedIndex == 0 ? "Left" : "Right";
+
+                tempSettings.Alignment =
+                    AlignmentComboBox.SelectedIndex == 0 ? "Top" :
+                    AlignmentComboBox.SelectedIndex == 2 ? "Bottom" : "Center";
             }
             else
             {
