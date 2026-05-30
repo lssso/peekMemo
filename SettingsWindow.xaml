@@ -156,7 +156,14 @@
                         <ComboBoxItem Content="중간"/>
                         <ComboBoxItem Content="하단"/>
                     </ComboBox>
-                    
+
+                    <CheckBox
+                        x:Name="StartWithWindowsCheckBox"
+                        Content="Windows 시작 시 자동 실행"
+                        Margin="0 0 0 18"
+                        Checked="SettingValue_Changed"
+                        Unchecked="SettingValue_Changed"/>
+
                     <Button
                         Content="기본값으로 초기화"
                         Height="34"

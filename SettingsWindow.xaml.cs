@@ -1,11 +1,41 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
+using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace PeekMemo
 {
+
+    public static class StartupManager
+    {
+        private const string AppName = "PeekMemo";
+
+        public static void SetStartup(bool enable)
+        {
+            using (RegistryKey key =
+                Registry.CurrentUser.OpenSubKey(
+                    @"Software\Microsoft\Windows\CurrentVersion\Run",
+                    true))
+            {
+                if (enable)
+                {
+                    string exePath =
+                        Process.GetCurrentProcess().MainModule.FileName;
+
+                    key.SetValue(AppName, exePath);
+                }
+                else
+                {
+                    key.DeleteValue(AppName, false);
+                }
+            }
+        }
+    }
+
     public partial class SettingsWindow : Window
     {
         private AppSettings originalSettings;
@@ -15,6 +45,8 @@ namespace PeekMemo
 
         public event System.Action<AppSettings> SettingsPreviewChanged;
         public event System.Action<AppSettings> SettingsSaved;
+
+        public bool StartWithWindows { get; set; } = false;
 
         public SettingsWindow(AppSettings settings, int startIndex)
         {
@@ -43,7 +75,8 @@ namespace PeekMemo
                 Edge = source.Edge,
                 Alignment = source.Alignment,
                 IndexLength = source.IndexLength,
-                VisibleIndexCount = source.VisibleIndexCount
+                VisibleIndexCount = source.VisibleIndexCount,
+                StartWithWindows = source.StartWithWindows
             };
 
             foreach (MemoIndexSettings index in source.Indexes)
@@ -57,6 +90,7 @@ namespace PeekMemo
                 });
             }
 
+
             return clone;
         }
 
@@ -67,6 +101,8 @@ namespace PeekMemo
             CopySettings(tempSettings, originalSettings);
 
             SettingsService.Save(originalSettings);
+
+            StartupManager.SetStartup(originalSettings.StartWithWindows);
 
             SettingsSaved?.Invoke(originalSettings);
 
@@ -165,6 +201,8 @@ namespace PeekMemo
         }
         private void LoadAppSettings()
         {
+            isLoadingSettings = true;
+
             OpenModeComboBox.SelectedIndex = tempSettings.OpenMode == "Click" ? 1 : 0;
 
             if (tempSettings.IndexLength == "Short")
@@ -179,6 +217,7 @@ namespace PeekMemo
             {
                 IndexLengthComboBox.SelectedIndex = 1;
             }
+
             if (tempSettings.Edge == "Left")
             {
                 EdgeComboBox.SelectedIndex = 0;
@@ -187,6 +226,7 @@ namespace PeekMemo
             {
                 EdgeComboBox.SelectedIndex = 1;
             }
+
             if (tempSettings.Alignment == "Top")
             {
                 AlignmentComboBox.SelectedIndex = 0;
@@ -199,7 +239,12 @@ namespace PeekMemo
             {
                 AlignmentComboBox.SelectedIndex = 1;
             }
+
+            StartWithWindowsCheckBox.IsChecked = tempSettings.StartWithWindows;
+
+            isLoadingSettings = false;
         }
+
         private void SettingValue_Changed(object sender, RoutedEventArgs e)
         {
             if (isLoadingSettings)
@@ -241,6 +286,9 @@ namespace PeekMemo
                 tempSettings.Alignment =
                     AlignmentComboBox.SelectedIndex == 0 ? "Top" :
                     AlignmentComboBox.SelectedIndex == 2 ? "Bottom" : "Center";
+
+                tempSettings.StartWithWindows =
+                    StartWithWindowsCheckBox.IsChecked == true;
             }
             else
             {
@@ -266,6 +314,7 @@ namespace PeekMemo
             target.Alignment = source.Alignment;
             target.IndexLength = source.IndexLength;
             target.VisibleIndexCount = source.VisibleIndexCount;
+            target.StartWithWindows = source.StartWithWindows;
             target.Indexes.Clear();
 
             foreach (MemoIndexSettings index in source.Indexes)

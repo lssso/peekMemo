@@ -12,6 +12,8 @@ namespace PeekMemo
 
         public int VisibleIndexCount { get; set; } = 2;
 
+        public bool StartWithWindows { get; set; } = false;
+
         public List<MemoIndexSettings> Indexes { get; set; } = new List<MemoIndexSettings>();
     }
 }
