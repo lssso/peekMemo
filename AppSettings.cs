@@ -4,6 +4,7 @@ namespace PeekMemo
 {
     public class AppSettings
     {
+        public string DataFolder { get; set; }
         public string OpenMode { get; set; } = "Hover";
         public string Monitor { get; set; } = "Primary";
         public string Edge { get; set; } = "Right";
