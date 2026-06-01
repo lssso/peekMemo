@@ -7,16 +7,24 @@ namespace PeekMemo
     public static class SettingsService
     {
         //private static readonly string SettingsFilePath = "settings.txt";
-        private static readonly string SettingsFilePath = "settings.json";
+        //private static readonly string SettingsFilePath = "settings.json";
+        private static string GetSettingsFilePath()
+        {
+            return Path.Combine(
+                DataFolderManager.GetDataFolder(),
+                "settings.json");
+        }
 
         public static AppSettings Load()
         {
-            if (!File.Exists(SettingsFilePath))
+            string settingsFilePath = GetSettingsFilePath();
+
+            if (!File.Exists(settingsFilePath))
             {
                 return CreateDefaultSettings();
             }
 
-            string json = File.ReadAllText(SettingsFilePath);
+            string json = File.ReadAllText(settingsFilePath);
 
             AppSettings settings =
                 JsonConvert.DeserializeObject<AppSettings>(json);
@@ -26,9 +34,11 @@ namespace PeekMemo
 
         public static void Save(AppSettings settings)
         {
+            string settingsFilePath = GetSettingsFilePath();
+
             string json = JsonConvert.SerializeObject(settings, Formatting.Indented);
 
-            File.WriteAllText(SettingsFilePath, json);
+            File.WriteAllText(settingsFilePath, json);
         }
 
         private static AppSettings CreateDefaultSettings()

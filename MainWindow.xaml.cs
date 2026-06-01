@@ -82,11 +82,11 @@ namespace PeekMemo
 
         private void LoadMemo()
         {
-            string memoFileName = GetCurrentMemoFileName();
+            string memoFilePath = GetCurrentMemoFilePath();
 
-            if (File.Exists(memoFileName))
+            if (File.Exists(memoFilePath))
             {
-                MemoTextBox.Text = File.ReadAllText(memoFileName);
+                MemoTextBox.Text = File.ReadAllText(memoFilePath);
                 SaveStatusText.Text = "저장된 메모 불러옴";
             }
             else
@@ -217,6 +217,18 @@ namespace PeekMemo
             settingsWindow.SettingsSaved += (savedSettings) =>
             {
                 appSettings = savedSettings;
+
+                if (currentIndex >= appSettings.VisibleIndexCount)
+                {
+                    currentIndex = appSettings.VisibleIndexCount - 1;
+                }
+
+                if (currentIndex < 0)
+                {
+                    currentIndex = 0;
+                }
+
+                LoadMemo();
                 ApplySettings();
             };
 
@@ -229,6 +241,16 @@ namespace PeekMemo
 
         private void ApplySettings()
         {
+            if (currentIndex >= appSettings.VisibleIndexCount)
+            {
+                currentIndex = appSettings.VisibleIndexCount - 1;
+            }
+
+            if (currentIndex < 0)
+            {
+                currentIndex = 0;
+            }
+
             MemoIndexSettings index1 = appSettings.Indexes[0];
             MemoIndexSettings index2 = appSettings.Indexes[1];
             MemoIndexSettings index3 = appSettings.Indexes[2];
@@ -257,7 +279,13 @@ namespace PeekMemo
 
             MemoBodyBorder.Background = currentColorBrush;
 
-           
+
+            MemoTabBorder2.Visibility =
+                appSettings.VisibleIndexCount >= 2
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+
+         
             MemoTabBorder3.Visibility =
             appSettings.VisibleIndexCount >= 3
             ? Visibility.Visible
@@ -332,7 +360,7 @@ namespace PeekMemo
 
         private void SaveMemo()
         {
-            File.WriteAllText(GetCurrentMemoFileName(), MemoTextBox.Text);
+            File.WriteAllText(GetCurrentMemoFilePath(), MemoTextBox.Text);
         }
 
         private void ApplyIndexLength()
@@ -513,6 +541,13 @@ namespace PeekMemo
             }
 
             return workArea.Top + (workArea.Height - this.Height) / 2;
+        }
+
+        private string GetCurrentMemoFilePath()
+        {
+            return Path.Combine(
+                DataFolderManager.GetDataFolder(),
+                GetCurrentMemoFileName());
         }
     }
 

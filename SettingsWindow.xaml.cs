@@ -331,10 +331,20 @@ namespace PeekMemo
         private void UpdateAddButton()
         {
             IndexTabButton1.Content = tempSettings.Indexes[0].Title;
-            IndexTabButton2.Content = tempSettings.Indexes[1].Title;
+
+            if (tempSettings.VisibleIndexCount >= 2)
+            {
+                IndexTabButton2.Visibility = Visibility.Visible;
+                IndexTabButton2.Content = tempSettings.Indexes[1].Title;
+            }
+            else
+            {
+                IndexTabButton2.Visibility = Visibility.Collapsed;
+            }
 
             if (tempSettings.VisibleIndexCount >= 3)
             {
+                AddIndexButton.Visibility = Visibility.Visible;
                 AddIndexButton.Content = tempSettings.Indexes[2].Title;
 
                 AddIndexButton.Width = 70;
@@ -349,6 +359,7 @@ namespace PeekMemo
             }
             else
             {
+                AddIndexButton.Visibility = Visibility.Visible;
                 AddIndexButton.Content = "+";
 
                 AddIndexButton.Width = 34;
@@ -366,14 +377,17 @@ namespace PeekMemo
         {
             if (tempSettings.VisibleIndexCount < 3)
             {
+                int newIndex = tempSettings.VisibleIndexCount;
+
                 tempSettings.VisibleIndexCount++;
 
-                tempSettings.Indexes[2].Title = "인덱스명";
-                tempSettings.Indexes[2].Color = "#FFFFD54F";
+                tempSettings.Indexes[newIndex].Title = "인덱스명";
+                tempSettings.Indexes[newIndex].Color = GetUnusedDefaultColor();
+                tempSettings.Indexes[newIndex].MemoFileName = $"memo{newIndex + 1}.txt";
 
                 UpdateAddButton();
 
-                LoadIndexSettings(2);
+                LoadIndexSettings(newIndex);
 
                 SettingsPreviewChanged?.Invoke(tempSettings);
             }
@@ -381,6 +395,39 @@ namespace PeekMemo
             {
                 MessageBox.Show("인덱스는 최대 3개까지 추가할 수 있습니다.");
             }
+        }
+
+        private string GetUnusedDefaultColor()
+        {
+            string[] defaultColors =
+            {
+                "#FFFFD54F",
+                "#FFF8BBD0",
+                "#FFC8E6C9",
+                "#FFBBDEFB",
+                "#FFD1C4E9"
+            };
+
+            foreach (string color in defaultColors)
+            {
+                bool isUsed = false;
+
+                for (int i = 0; i < tempSettings.VisibleIndexCount; i++)
+                {
+                    if (tempSettings.Indexes[i].Color == color)
+                    {
+                        isUsed = true;
+                        break;
+                    }
+                }
+
+                if (!isUsed)
+                {
+                    return color;
+                }
+            }
+
+            return defaultColors[0];
         }
 
         private void DeleteIndexButton_Click(object sender, RoutedEventArgs e)
@@ -398,9 +445,15 @@ namespace PeekMemo
 
             string memoFileName = tempSettings.Indexes[selectedIndex].MemoFileName;
 
-            if (File.Exists(memoFileName))
+            string memoFilePath = Path.Combine(
+                DataFolderManager.GetDataFolder(),
+                memoFileName);
+
+            if (File.Exists(memoFilePath))
             {
-                string deletedFolder = "deleted";
+                string deletedFolder = Path.Combine(
+                    DataFolderManager.GetDataFolder(),
+                    "deleted");
 
                 if (!Directory.Exists(deletedFolder))
                 {
@@ -417,11 +470,21 @@ namespace PeekMemo
 
                 string deletedPath = Path.Combine(deletedFolder, deletedFileName);
 
-                File.Move(memoFileName, deletedPath);
+                File.Move(memoFilePath, deletedPath);
             }
 
             tempSettings.Indexes.RemoveAt(selectedIndex);
             tempSettings.VisibleIndexCount--;
+
+            if (tempSettings.VisibleIndexCount < 1)
+            {
+                tempSettings.VisibleIndexCount = 1;
+            }
+
+            if (selectedIndex >= tempSettings.VisibleIndexCount)
+            {
+                selectedIndex = tempSettings.VisibleIndexCount - 1;
+            }
 
             while (tempSettings.Indexes.Count < 3)
             {
