@@ -7,6 +7,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
+using Drawing = System.Drawing;
+using Forms = System.Windows.Forms;
 
 namespace PeekMemo
 {
@@ -20,6 +22,8 @@ namespace PeekMemo
         private bool isResizingHeight = false;
         private Point resizeStartPoint;
         private double resizeStartHeight;
+        private Forms.NotifyIcon trayIcon;
+        private bool isReallyClosing = false;
 
         public MainWindow()
         {
@@ -38,6 +42,8 @@ namespace PeekMemo
 
             LoadMemo();
 
+            Closing += MainWindow_Closing;
+
             this.MinHeight = 300;
             this.MaxWidth = this.Width;
             this.MinWidth = this.Width;
@@ -53,6 +59,14 @@ namespace PeekMemo
                 HideMemo();
             }
         }
+
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            e.Cancel = true;
+
+            Hide();
+        }
+
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             isPinned = true;
@@ -106,6 +120,16 @@ namespace PeekMemo
             SetWindowPosition();
 
             ApplySettingsWithoutMoving();
+
+            trayIcon = new Forms.NotifyIcon();
+
+            trayIcon.Icon = Drawing.SystemIcons.Application;
+
+            trayIcon.Text = "PeekMemo";
+
+            trayIcon.Visible = true;
+
+            trayIcon.DoubleClick += TrayIcon_DoubleClick;
         }
 
         private void Window_MouseEnter(object sender, MouseEventArgs e)
@@ -124,6 +148,16 @@ namespace PeekMemo
             {
                 HideMemo();
             }
+        }
+        private void TrayIcon_DoubleClick(object sender, EventArgs e)
+        {
+            Show();
+
+            WindowState = WindowState.Normal;
+
+            SetWindowPositionInstant();
+
+            Activate();
         }
 
         private void ShowMemo()
@@ -549,6 +583,13 @@ namespace PeekMemo
                 DataFolderManager.GetDataFolder(),
                 GetCurrentMemoFileName());
         }
+
+        private void HideToTrayButton_Click(object sender, RoutedEventArgs e)
+        {
+            Hide();
+        }
+
+
     }
 
 }

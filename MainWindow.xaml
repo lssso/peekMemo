@@ -60,10 +60,20 @@
                             Click="PinButton_Click"/>
 
                             <Button
+                            x:Name="HideToTrayButton"
+                            Content="👁"
+                            Width="28"
+                            Height="28"
+                            Margin="0 0 6 0"
+                            Click="HideToTrayButton_Click"/>
+
+                            <Button
                             Content="⚙"
                             Width="28"
                             Height="28"
                             Click="SettingsButton_Click"/>
+
+                            
                         </StackPanel>
 
                         <TextBlock
