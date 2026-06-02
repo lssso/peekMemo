@@ -157,6 +157,33 @@
                         <ComboBoxItem Content="하단"/>
                     </ComboBox>
 
+                    <TextBlock
+                        Text="저장 위치"
+                        Margin="0,0,0,6"
+                        FontWeight="SemiBold"/>
+
+                                        <Grid Margin="0,0,0,18">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="70" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox
+                            x:Name="DataFolderTextBox"
+                            Grid.Column="0"
+                            IsReadOnly="True"
+                            VerticalContentAlignment="Center"
+                            Margin="0,0,8,0"/>
+
+                                            <Button
+                            x:Name="ChangeDataFolderButton"
+                            Grid.Column="1"
+                            Content="변경"
+                            Click="ChangeDataFolderButton_Click"/>
+                                        </Grid>
+
+
+
                     <CheckBox
                         x:Name="StartWithWindowsCheckBox"
                         Content="Windows 시작 시 자동 실행"

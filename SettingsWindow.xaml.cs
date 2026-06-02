@@ -2,7 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
+using Forms = System.Windows.Forms;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -70,12 +70,13 @@ namespace PeekMemo
         {
             AppSettings clone = new AppSettings
             {
+                DataFolder = source.DataFolder,
                 OpenMode = source.OpenMode,
                 Monitor = source.Monitor,
                 Edge = source.Edge,
                 Alignment = source.Alignment,
                 IndexLength = source.IndexLength,
-                VisibleIndexCount = source.VisibleIndexCount,
+                VisibleIndexCount = source.VisibleIndexCount,                
                 StartWithWindows = source.StartWithWindows
             };
 
@@ -243,6 +244,8 @@ namespace PeekMemo
             StartWithWindowsCheckBox.IsChecked = tempSettings.StartWithWindows;
 
             isLoadingSettings = false;
+
+            DataFolderTextBox.Text = tempSettings.DataFolder;
         }
 
         private void SettingValue_Changed(object sender, RoutedEventArgs e)
@@ -308,6 +311,7 @@ namespace PeekMemo
         }
         private void CopySettings(AppSettings source, AppSettings target)
         {
+            target.DataFolder = source.DataFolder;
             target.OpenMode = source.OpenMode;
             target.Monitor = source.Monitor;
             target.Edge = source.Edge;
@@ -517,6 +521,20 @@ namespace PeekMemo
 
             MessageBox.Show("인덱스가 삭제되었습니다.");
 
+        }
+
+        private void ChangeDataFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            using (var dialog = new Forms.FolderBrowserDialog())
+            {
+                dialog.Description = "PeekMemo 저장 위치 선택";
+
+                if (dialog.ShowDialog() == Forms.DialogResult.OK)
+                {
+                    tempSettings.DataFolder = dialog.SelectedPath;
+                    DataFolderTextBox.Text = dialog.SelectedPath;
+                }
+            }
         }
 
     }

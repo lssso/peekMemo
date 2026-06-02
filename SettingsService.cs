@@ -11,7 +11,7 @@ namespace PeekMemo
         private static string GetSettingsFilePath()
         {
             return Path.Combine(
-                DataFolderManager.GetDataFolder(),
+                DataFolderManager.GetDefaultDataFolder(),
                 "settings.json");
         }
 
@@ -29,7 +29,17 @@ namespace PeekMemo
             AppSettings settings =
                 JsonConvert.DeserializeObject<AppSettings>(json);
 
-            return settings ?? CreateDefaultSettings();
+            if (settings == null)
+            {
+                return CreateDefaultSettings();
+            }
+
+            if (string.IsNullOrWhiteSpace(settings.DataFolder))
+            {
+                settings.DataFolder = DataFolderManager.GetDefaultDataFolder();
+            }
+
+            return settings;
         }
 
         public static void Save(AppSettings settings)
@@ -45,6 +55,7 @@ namespace PeekMemo
         {
             return new AppSettings
             {
+                DataFolder = DataFolderManager.GetDefaultDataFolder(),
                 OpenMode = "Hover",
                 Monitor = "Primary",
                 Edge = "Right",

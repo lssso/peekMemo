@@ -5,11 +5,20 @@ namespace PeekMemo
 {
     public static class DataFolderManager
     {
-        public static string GetDataFolder()
+        public static string GetDefaultDataFolder()
         {
-            string folder = Path.Combine(
+            return Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "PeekMemo");
+        }
+
+        public static string GetDataFolder()
+        {
+            AppSettings settings = SettingsService.Load();
+
+            string folder = string.IsNullOrWhiteSpace(settings.DataFolder)
+                ? GetDefaultDataFolder()
+                : settings.DataFolder;
 
             if (!Directory.Exists(folder))
             {
