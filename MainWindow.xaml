@@ -1,4 +1,5 @@
 ﻿<Window x:Class="PeekMemo.MainWindow"
+        ShowInTaskbar="False"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="PeekMemo"
