@@ -6,7 +6,7 @@
         Height="600"
         MinWidth="370"
         MinHeight="600"
-        ResizeMode="NoResize"
+        ResizeMode="CanResizeWithGrip"
         WindowStartupLocation="CenterOwner">
 
     <Window.Resources>
@@ -192,12 +192,14 @@
                         Unchecked="SettingValue_Changed"/>
 
                     <Button
+                        x:Name="ResetAppSettingsButton"
                         Content="기본값으로 초기화"
                         Height="34"
                         Background="#FFF5F5F5"
                         BorderThickness="0"
                         Foreground="#555555"
-                        FontWeight="SemiBold"/>
+                        FontWeight="SemiBold"
+                        Click="ResetAppSettingsButton_Click"/>
                 </StackPanel>
 
                 <StackPanel x:Name="IndexSettingsPanel"

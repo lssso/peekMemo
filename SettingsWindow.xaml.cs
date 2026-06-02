@@ -531,10 +531,88 @@ namespace PeekMemo
 
                 if (dialog.ShowDialog() == Forms.DialogResult.OK)
                 {
-                    tempSettings.DataFolder = dialog.SelectedPath;
+                    string currentFolder = tempSettings.DataFolder;
+
+                    string selectedFolder = dialog.SelectedPath;
+
+                    string newFolder;
+
+                    if (Path.GetFileName(selectedFolder)
+                        .Equals("PeekMemo", StringComparison.OrdinalIgnoreCase))
+                    {
+                        newFolder = selectedFolder;
+                    }
+                    else
+                    {
+                        newFolder = Path.Combine(selectedFolder, "PeekMemo");
+                    }
+
+                    if (!string.Equals(
+                            currentFolder,
+                            newFolder,
+                            StringComparison.OrdinalIgnoreCase))
+                    {
+                        CopyDataFolderContents(
+                            currentFolder,
+                            newFolder);
+                    }
+
+                    tempSettings.DataFolder = newFolder;
                     DataFolderTextBox.Text = dialog.SelectedPath;
                 }
             }
+        }
+
+        private void CopyDataFolderContents(string sourceFolder, string targetFolder)
+        {
+            if (!Directory.Exists(sourceFolder))
+            {
+                return;
+            }
+
+            if (!Directory.Exists(targetFolder))
+            {
+                Directory.CreateDirectory(targetFolder);
+            }
+
+            foreach (string file in Directory.GetFiles(sourceFolder))
+            {
+                string fileName = Path.GetFileName(file);
+
+                if (fileName == "settings.json")
+                {
+                    continue;
+                }
+
+                string targetFile =
+                    Path.Combine(targetFolder, fileName);
+
+                File.Copy(file, targetFile, true);
+            }
+
+            foreach (string directory in Directory.GetDirectories(sourceFolder))
+            {
+                string directoryName =
+                    Path.GetFileName(directory);
+
+                string targetDirectory =
+                    Path.Combine(targetFolder, directoryName);
+
+                CopyDataFolderContents(directory, targetDirectory);
+            }
+        }
+
+        private void ResetAppSettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            tempSettings.OpenMode = "Hover";
+            tempSettings.IndexLength = "Medium";
+            tempSettings.Edge = "Right";
+            tempSettings.Alignment = "Center";
+            tempSettings.StartWithWindows = false;
+
+            LoadAppSettings();
+
+            SettingsPreviewChanged?.Invoke(tempSettings);
         }
 
     }
