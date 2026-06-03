@@ -43,6 +43,7 @@ namespace PeekMemo
             LoadMemo();
 
             Closing += MainWindow_Closing;
+            KeyDown += MainWindow_KeyDown;
 
             this.MinHeight = 300;
             this.MaxWidth = this.Width;
@@ -53,6 +54,30 @@ namespace PeekMemo
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
+            if (Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift))
+            {
+                if (e.Key == Key.D1)
+                {
+                    OpenMemoByHotKey(0);
+                    e.Handled = true;
+                    return;
+                }
+
+                if (e.Key == Key.D2)
+                {
+                    OpenMemoByHotKey(1);
+                    e.Handled = true;
+                    return;
+                }
+
+                if (e.Key == Key.D3)
+                {
+                    OpenMemoByHotKey(2);
+                    e.Handled = true;
+                    return;
+                }
+            }
+
             if (e.Key == Key.Escape && !isPinnedMode)
             {
                 isPinned = false;
@@ -115,6 +140,39 @@ namespace PeekMemo
             HideMemo();
         }
 
+        private void MainWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            if ((Keyboard.Modifiers &
+                 (ModifierKeys.Control | ModifierKeys.Shift))
+                 == (ModifierKeys.Control | ModifierKeys.Shift))
+            {
+                if (e.Key == Key.D1)
+                {
+                    OpenMemoByHotKey(0);
+                }
+                else if (e.Key == Key.D2)
+                {
+                    OpenMemoByHotKey(1);
+                }
+                else if (e.Key == Key.D3)
+                {
+                    OpenMemoByHotKey(2);
+                }
+            }
+        }
+        private void OpenMemoByHotKey(int index)
+        {
+            if (index >= appSettings.VisibleIndexCount)
+            {
+                return;
+            }
+
+            SwitchMemo(index);
+
+            ShowMemo();
+            Activate();
+        }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             SetWindowPosition();
@@ -130,6 +188,9 @@ namespace PeekMemo
             trayIcon.Visible = true;
 
             trayIcon.DoubleClick += TrayIcon_DoubleClick;
+
+            Focus();
+            Keyboard.Focus(this);
         }
 
         private void Window_MouseEnter(object sender, MouseEventArgs e)
@@ -588,7 +649,6 @@ namespace PeekMemo
         {
             Hide();
         }
-
 
     }
 
