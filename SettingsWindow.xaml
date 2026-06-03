@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="PeekMemo 설정"
         Width="370"
-        Height="600"
+        Height="700"
         MinWidth="370"
-        MinHeight="600"
+        MinHeight="700"
         ResizeMode="CanResizeWithGrip"
         WindowStartupLocation="CenterOwner">
 
@@ -204,7 +204,24 @@
 
                 <StackPanel x:Name="IndexSettingsPanel"
                             Visibility="Collapsed">
-                    <TextBlock Text="인덱스 제목" Margin="0 0 0 5"/>
+                    <Grid Margin="0,0,0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                                        <TextBlock
+                        Text="제목"
+                        FontWeight="SemiBold" />
+
+                                        <TextBlock
+                        x:Name="HotKeyInfoTextBlock"
+                        Grid.Column="1"
+                        Text="Ctrl+Shift+1"
+                        FontSize="12"
+                        Foreground="#888888"
+                        VerticalAlignment="Center" />
+                                    </Grid>
 
                     <TextBox x:Name="TitleTextBox"
                              MaxLength="6"
@@ -214,6 +231,7 @@
                              VerticalContentAlignment="Center"
                              TextChanged="SettingValue_Changed"/>
 
+                    
                     <TextBlock Text="인덱스 색상" Margin="0 0 0 8"/>
 
                     <StackPanel x:Name="ColorPanel"

@@ -139,6 +139,8 @@ namespace PeekMemo
 
             TitleTextBox.Text = tempSettings.Indexes[index].Title;
 
+            HotKeyInfoTextBlock.Text = $"Ctrl+Shift+{index + 1}";
+
             string currentColor = tempSettings.Indexes[index].Color;
 
             foreach (var child in ColorPanel.Children)

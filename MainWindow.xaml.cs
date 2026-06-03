@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
@@ -24,7 +26,35 @@ namespace PeekMemo
         private double resizeStartHeight;
         private Forms.NotifyIcon trayIcon;
         private bool isReallyClosing = false;
+        private List<int> searchResults = new List<int>();
+        private int currentSearchResultIndex = -1;
 
+        private const int HOTKEY_ID_MEMO_1 = 9001;
+        private const int HOTKEY_ID_MEMO_2 = 9002;
+        private const int HOTKEY_ID_MEMO_3 = 9003;
+
+        private const uint MOD_CONTROL = 0x0002;
+        private const uint MOD_SHIFT = 0x0004;
+
+        private const uint VK_1 = 0x31;
+        private const uint VK_2 = 0x32;
+        private const uint VK_3 = 0x33;
+
+        private const int WM_HOTKEY = 0x0312;
+
+        [DllImport("user32.dll")]
+        private static extern bool RegisterHotKey(
+            IntPtr hWnd,
+            int id,
+            uint fsModifiers,
+            uint vk);
+
+        [DllImport("user32.dll")]
+        private static extern bool UnregisterHotKey(
+            IntPtr hWnd,
+            int id);
+
+      
         public MainWindow()
         {
             InitializeComponent();
@@ -43,7 +73,6 @@ namespace PeekMemo
             LoadMemo();
 
             Closing += MainWindow_Closing;
-            KeyDown += MainWindow_KeyDown;
 
             this.MinHeight = 300;
             this.MaxWidth = this.Width;
@@ -54,28 +83,16 @@ namespace PeekMemo
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift))
+            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.F)
             {
-                if (e.Key == Key.D1)
-                {
-                    OpenMemoByHotKey(0);
-                    e.Handled = true;
-                    return;
-                }
+                SearchPanel.Visibility = Visibility.Visible;
 
-                if (e.Key == Key.D2)
-                {
-                    OpenMemoByHotKey(1);
-                    e.Handled = true;
-                    return;
-                }
+                SearchTextBox.Focus();
+                Keyboard.Focus(SearchTextBox);
+                SearchTextBox.SelectAll();
 
-                if (e.Key == Key.D3)
-                {
-                    OpenMemoByHotKey(2);
-                    e.Handled = true;
-                    return;
-                }
+                e.Handled = true;
+                return;
             }
 
             if (e.Key == Key.Escape && !isPinnedMode)
@@ -83,13 +100,34 @@ namespace PeekMemo
                 isPinned = false;
                 HideMemo();
             }
+            
         }
 
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            e.Cancel = true;
+            if (!isReallyClosing)
+            {
+                e.Cancel = true;
+                Hide();
+                return;
+            }
 
-            Hide();
+            UnregisterGlobalHotKeys();
+
+            if (trayIcon != null)
+            {
+                trayIcon.Visible = false;
+                trayIcon.Dispose();
+            }
+        }
+
+        private void UnregisterGlobalHotKeys()
+        {
+            IntPtr handle = new WindowInteropHelper(this).Handle;
+
+            UnregisterHotKey(handle, HOTKEY_ID_MEMO_1);
+            UnregisterHotKey(handle, HOTKEY_ID_MEMO_2);
+            UnregisterHotKey(handle, HOTKEY_ID_MEMO_3);
         }
 
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -140,39 +178,6 @@ namespace PeekMemo
             HideMemo();
         }
 
-        private void MainWindow_KeyDown(object sender, KeyEventArgs e)
-        {
-            if ((Keyboard.Modifiers &
-                 (ModifierKeys.Control | ModifierKeys.Shift))
-                 == (ModifierKeys.Control | ModifierKeys.Shift))
-            {
-                if (e.Key == Key.D1)
-                {
-                    OpenMemoByHotKey(0);
-                }
-                else if (e.Key == Key.D2)
-                {
-                    OpenMemoByHotKey(1);
-                }
-                else if (e.Key == Key.D3)
-                {
-                    OpenMemoByHotKey(2);
-                }
-            }
-        }
-        private void OpenMemoByHotKey(int index)
-        {
-            if (index >= appSettings.VisibleIndexCount)
-            {
-                return;
-            }
-
-            SwitchMemo(index);
-
-            ShowMemo();
-            Activate();
-        }
-
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             SetWindowPosition();
@@ -189,8 +194,7 @@ namespace PeekMemo
 
             trayIcon.DoubleClick += TrayIcon_DoubleClick;
 
-            Focus();
-            Keyboard.Focus(this);
+            RegisterGlobalHotKeys();
         }
 
         private void Window_MouseEnter(object sender, MouseEventArgs e)
@@ -648,6 +652,177 @@ namespace PeekMemo
         private void HideToTrayButton_Click(object sender, RoutedEventArgs e)
         {
             Hide();
+        }
+        private void RegisterGlobalHotKeys()
+        {
+            IntPtr handle = new WindowInteropHelper(this).Handle;
+
+            HwndSource source = HwndSource.FromHwnd(handle);
+            source.AddHook(HwndHook);
+
+            RegisterHotKey(handle, HOTKEY_ID_MEMO_1, MOD_CONTROL | MOD_SHIFT, VK_1);
+            RegisterHotKey(handle, HOTKEY_ID_MEMO_2, MOD_CONTROL | MOD_SHIFT, VK_2);
+            RegisterHotKey(handle, HOTKEY_ID_MEMO_3, MOD_CONTROL | MOD_SHIFT, VK_3);
+        }
+
+        private IntPtr HwndHook( IntPtr hwnd, int msg,IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (msg == WM_HOTKEY)
+            {
+                int hotKeyId = wParam.ToInt32();
+
+                if (hotKeyId == HOTKEY_ID_MEMO_1)
+                {
+                    OpenMemoByHotKey(0);
+                    handled = true;
+                }
+                else if (hotKeyId == HOTKEY_ID_MEMO_2)
+                {
+                    OpenMemoByHotKey(1);
+                    handled = true;
+                }
+                else if (hotKeyId == HOTKEY_ID_MEMO_3)
+                {
+                    OpenMemoByHotKey(2);
+                    handled = true;
+                }
+            }
+
+            return IntPtr.Zero;
+        }
+
+        private void OpenMemoByHotKey(int index)
+        {
+            if (index >= appSettings.VisibleIndexCount)
+            {
+                return;
+            }
+
+            Show();
+
+            WindowState = WindowState.Normal;
+
+            SwitchMemo(index);
+
+            ShowMemo();
+
+            Activate();
+        }
+
+        private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            BuildSearchResults();
+        }
+
+        private void SearchTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key != Key.Enter)
+            {
+                return;
+            }
+
+            if (Keyboard.Modifiers == ModifierKeys.Shift)
+            {
+                MoveToPreviousSearchResult();
+            }
+            else
+            {
+                MoveToNextSearchResult();
+            }
+
+            e.Handled = true;
+        }
+
+        private void BuildSearchResults()
+        {
+            searchResults.Clear();
+            currentSearchResultIndex = -1;
+
+            string keyword = SearchTextBox.Text;
+
+            if (string.IsNullOrWhiteSpace(keyword))
+            {
+                SearchResultText.Text = "0 / 0";
+                return;
+            }
+
+            string text = MemoTextBox.Text;
+            int startIndex = 0;
+
+            while (true)
+            {
+                int foundIndex = text.IndexOf(
+                    keyword,
+                    startIndex,
+                    StringComparison.OrdinalIgnoreCase);
+
+                if (foundIndex < 0)
+                {
+                    break;
+                }
+
+                searchResults.Add(foundIndex);
+                startIndex = foundIndex + keyword.Length;
+            }
+
+            SearchResultText.Text =
+                searchResults.Count == 0
+                    ? "0 / 0"
+                    : $"0 / {searchResults.Count}";
+        }
+
+        private void MoveToNextSearchResult()
+        {
+            if (searchResults.Count == 0)
+            {
+                return;
+            }
+
+            currentSearchResultIndex++;
+
+            if (currentSearchResultIndex >= searchResults.Count)
+            {
+                currentSearchResultIndex = 0;
+            }
+
+            SelectSearchResult();
+        }
+
+        private void MoveToPreviousSearchResult()
+        {
+            if (searchResults.Count == 0)
+            {
+                return;
+            }
+
+            currentSearchResultIndex--;
+
+            if (currentSearchResultIndex < 0)
+            {
+                currentSearchResultIndex = searchResults.Count - 1;
+            }
+
+            SelectSearchResult();
+        }
+
+        private void SelectSearchResult()
+        {
+            string keyword = SearchTextBox.Text;
+
+            int index = searchResults[currentSearchResultIndex];
+
+            MemoTextBox.Focus();
+            MemoTextBox.Select(index, keyword.Length);
+
+            SearchResultText.Text =
+                $"{currentSearchResultIndex + 1} / {searchResults.Count}";
+        }
+
+        private void CloseSearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            SearchPanel.Visibility = Visibility.Collapsed;
+            SearchTextBox.Text = "";
+            MemoTextBox.Focus();
         }
 
     }

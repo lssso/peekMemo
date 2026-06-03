@@ -14,7 +14,6 @@
         PreviewKeyDown="Window_KeyDown"
         Deactivated="Window_Deactivated"
         WindowStyle="None"
-        Focusable="True"
         AllowsTransparency="True"
         Background="Transparent">
 
@@ -44,69 +43,116 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <DockPanel Grid.Row="0" Margin="0 0 0 10">
+                    <Grid Grid.Row="0" Margin="0 0 0 10">
                         <StackPanel
-                        Orientation="Horizontal"
-                        DockPanel.Dock="Right">
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right">
+
+                                                <Button
+                                x:Name="PinButton"
+                                Content="📌"
+                                Width="28"
+                                Height="28"
+                                Margin="0 0 6 0"
+                                Click="PinButton_Click"/>
+
+                                                <Button
+                                x:Name="HideToTrayButton"
+                                Content="👁"
+                                Width="28"
+                                Height="28"
+                                Margin="0 0 6 0"
+                                Click="HideToTrayButton_Click"/>
+
+                                                <Button
+                                Content="⚙"
+                                Width="28"
+                                Height="28"
+                                Click="SettingsButton_Click"/>
+                                            </StackPanel>
+                                        </Grid>
+
+                                <Border
+                                    x:Name="SearchPanel"
+                                    Grid.Row="1"
+                                    Background="#FFF5F5F5"
+                                    BorderBrush="#DDDDDD"
+                                    BorderThickness="1"
+                                    CornerRadius="6"
+                                    Padding="6"
+                                    Visibility="Collapsed"
+                                    VerticalAlignment="Top"
+                                    Margin="0,0,0,8">
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                <TextBox
+                                    x:Name="SearchTextBox"
+                                    Width="180"
+                                    KeyDown="SearchTextBox_KeyDown"
+                                    TextChanged="SearchTextBox_TextChanged"/>
+
+                            <TextBlock
+                                    x:Name="SearchResultText"
+                                    Grid.Column="1"
+                                    Margin="8,0"
+                                    VerticalAlignment="Center"
+                                    Text="0 / 0"/>
 
                             <Button
-                            x:Name="PinButton"
-                            Content="📌"
-                            Width="28"
-                            Height="28"
-                            Margin="0 0 6 0"
-                            Click="PinButton_Click"/>
+                                x:Name="CloseSearchButton"
+                                Grid.Column="2"
+                                Content="X"
+                                Width="24"
+                                Height="24"
+                                Click="CloseSearchButton_Click"/>
+                        </Grid>
+                                            </Border>
 
-                            <Button
-                            x:Name="HideToTrayButton"
-                            Content="👁"
-                            Width="28"
-                            Height="28"
-                            Margin="0 0 6 0"
-                            Click="HideToTrayButton_Click"/>
+                                <TextBox
+                            x:Name="MemoTextBox"
+                            Grid.Row="2"
+                            FontSize="15"
+                            TextWrapping="Wrap"
+                            AcceptsReturn="True"
+                            VerticalScrollBarVisibility="Auto"
+                            Background="#FFFFF8E1"
+                            BorderThickness="0"
+                            Padding="10"
+                            TextChanged="MemoTextBox_TextChanged"
+                            PreviewMouseLeftButtonDown="MemoTextBox_PreviewMouseLeftButtonDown"/>
 
-                            <Button
-                            Content="⚙"
-                            Width="28"
-                            Height="28"
-                            Click="SettingsButton_Click"/>
-
-                            
-                        </StackPanel>
+                    <Grid Grid.Row="3" Margin="0 8 0 0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
                         <TextBlock
                         Text="PeekMemo"
-                        FontSize="22"
-                        FontWeight="Bold"
-                        Foreground="#333333"
-                        HorizontalAlignment="Center"/>
-                    </DockPanel>
+                        FontSize="11"
+                        Foreground="#777777"
+                        VerticalAlignment="Center"/>
 
-                    <TextBox
-                x:Name="MemoTextBox"
-                Grid.Row="1"
-                FontSize="15"
-                TextWrapping="Wrap"
-                AcceptsReturn="True"
-                VerticalScrollBarVisibility="Auto"
-                Background="#FFFFF8E1"
-                BorderThickness="0"
-                Padding="10"
-                TextChanged="MemoTextBox_TextChanged"
-                PreviewMouseLeftButtonDown="MemoTextBox_PreviewMouseLeftButtonDown"/>
-
-                    <TextBlock
-                x:Name="SaveStatusText"
-                Grid.Row="2"
-                Text="아직 저장되지 않음"
-                FontSize="11"
-                Foreground="#777777"
-                Margin="0 8 0 0"
-                HorizontalAlignment="Right"/>
+                                        <TextBlock
+                        x:Name="SaveStatusText"
+                        Grid.Column="1"
+                        Text="아직 저장되지 않음"
+                        FontSize="11"
+                        Foreground="#777777"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"/>
+                                    </Grid>
 
                 </Grid>
             </Border>
