@@ -236,7 +236,7 @@ namespace PeekMemo
 
         private void ShowMemo()
         {
-            var workArea = SystemParameters.WorkArea;
+            var workArea = GetTargetWorkArea();
 
             if (appSettings.Edge == "Left")
             {
@@ -252,7 +252,7 @@ namespace PeekMemo
 
         private void HideMemo()
         {
-            var workArea = SystemParameters.WorkArea;
+            var workArea = GetTargetWorkArea();
 
             if (appSettings.Edge == "Left")
             {
@@ -541,7 +541,7 @@ namespace PeekMemo
 
         private void SetWindowPositionInstant()
         {
-            var workArea = SystemParameters.WorkArea;
+            var workArea = GetTargetWorkArea();
 
             this.BeginAnimation(Window.LeftProperty, null);
             this.BeginAnimation(Window.TopProperty, null);
@@ -636,7 +636,7 @@ namespace PeekMemo
 
         private double GetTopByAlignment()
         {
-            var workArea = SystemParameters.WorkArea;
+            var workArea = GetTargetWorkArea();
 
             if (appSettings.Alignment == "Top")
             {
@@ -910,6 +910,34 @@ namespace PeekMemo
 
             SelectSearchResult();
         }
+
+        private Rect GetTargetWorkArea()
+        {
+            Forms.Screen[] screens = Forms.Screen.AllScreens;
+
+            Forms.Screen targetScreen = Forms.Screen.PrimaryScreen;
+
+            if (appSettings.Monitor == "Screen1" && screens.Length >= 1)
+            {
+                targetScreen = screens[0];
+            }
+            else if (appSettings.Monitor == "Screen2" && screens.Length >= 2)
+            {
+                targetScreen = screens[1];
+            }
+            else if (appSettings.Monitor == "Screen3" && screens.Length >= 3)
+            {
+                targetScreen = screens[2];
+            }
+
+            return new Rect(
+                targetScreen.WorkingArea.Left,
+                targetScreen.WorkingArea.Top,
+                targetScreen.WorkingArea.Width,
+                targetScreen.WorkingArea.Height);
+        }
+
+
 
     }
 
