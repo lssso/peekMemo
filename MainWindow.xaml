@@ -94,12 +94,13 @@
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
 
-                                <TextBox
+                            <TextBox
                                     x:Name="SearchTextBox"
                                     Width="180"
-                                    KeyDown="SearchTextBox_KeyDown"
                                     TextChanged="SearchTextBox_TextChanged"/>
 
                             <TextBlock
@@ -110,13 +111,34 @@
                                     Text="0 / 0"/>
 
                             <Button
-                                x:Name="CloseSearchButton"
+                                x:Name="PreviousSearchButton"
                                 Grid.Column="2"
+                                Focusable="False"
+                                Content="▲"
+                                Width="24"
+                                Height="24"
+                                Click="PreviousSearchButton_Click"/>
+
+                                                            <Button
+                                x:Name="NextSearchButton"
+                                Grid.Column="3"
+                                Focusable="False"
+                                Content="▼"
+                                Width="24"
+                                Height="24"
+                                Margin="4 0 0 0"
+                                Click="NextSearchButton_Click"/>
+
+                                <Button
+                                x:Name="CloseSearchButton"
+                                Grid.Column="4"
+                                Focusable="False"
                                 Content="X"
                                 Width="24"
                                 Height="24"
+                                Margin="4 0 0 0"
                                 Click="CloseSearchButton_Click"/>
-                        </Grid>
+                               </Grid>
                                             </Border>
 
                                 <TextBox
@@ -130,6 +152,9 @@
                             BorderThickness="0"
                             Padding="10"
                             TextChanged="MemoTextBox_TextChanged"
+                            SelectionBrush="#FF90CAF9"
+                            SelectionOpacity="0.6"
+                            IsInactiveSelectionHighlightEnabled="True"
                             PreviewMouseLeftButtonDown="MemoTextBox_PreviewMouseLeftButtonDown"/>
 
                     <Grid Grid.Row="3" Margin="0 8 0 0">

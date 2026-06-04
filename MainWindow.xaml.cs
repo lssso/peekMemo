@@ -28,6 +28,7 @@ namespace PeekMemo
         private bool isReallyClosing = false;
         private List<int> searchResults = new List<int>();
         private int currentSearchResultIndex = -1;
+        private string lastSearchKeyword = "";
 
         private const int HOTKEY_ID_MEMO_1 = 9001;
         private const int HOTKEY_ID_MEMO_2 = 9002;
@@ -83,6 +84,7 @@ namespace PeekMemo
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
+           
             if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.F)
             {
                 SearchPanel.Visibility = Visibility.Visible;
@@ -90,6 +92,13 @@ namespace PeekMemo
                 SearchTextBox.Focus();
                 Keyboard.Focus(SearchTextBox);
                 SearchTextBox.SelectAll();
+
+                e.Handled = true;
+                return;
+            }
+            if (e.Key == Key.Escape && SearchPanel.Visibility == Visibility.Visible)
+            {
+                CloseSearchPanel();
 
                 e.Handled = true;
                 return;
@@ -714,42 +723,23 @@ namespace PeekMemo
             BuildSearchResults();
         }
 
-        private void SearchTextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key != Key.Enter)
-            {
-                return;
-            }
-
-            if (Keyboard.Modifiers == ModifierKeys.Shift)
-            {
-                MoveToPreviousSearchResult();
-            }
-            else
-            {
-                MoveToNextSearchResult();
-            }
-
-            e.Handled = true;
-        }
-
         private void BuildSearchResults()
         {
             searchResults.Clear();
             currentSearchResultIndex = -1;
 
             string keyword = SearchTextBox.Text;
+            lastSearchKeyword = keyword;
 
             if (string.IsNullOrWhiteSpace(keyword))
             {
-                SearchResultText.Text = "0 / 0";
                 return;
             }
 
             string text = MemoTextBox.Text;
             int startIndex = 0;
 
-            while (true)
+            while (startIndex < text.Length)
             {
                 int foundIndex = text.IndexOf(
                     keyword,
@@ -765,10 +755,16 @@ namespace PeekMemo
                 startIndex = foundIndex + keyword.Length;
             }
 
-            SearchResultText.Text =
-                searchResults.Count == 0
-                    ? "0 / 0"
-                    : $"0 / {searchResults.Count}";
+            if (searchResults.Count > 0)
+            {
+                currentSearchResultIndex = 0;
+
+                SelectSearchResult();
+            }
+            else
+            {
+                SearchResultText.Text = "0 / 0";
+            }
         }
 
         private void MoveToNextSearchResult()
@@ -778,11 +774,18 @@ namespace PeekMemo
                 return;
             }
 
-            currentSearchResultIndex++;
-
-            if (currentSearchResultIndex >= searchResults.Count)
+            if (currentSearchResultIndex < 0)
             {
                 currentSearchResultIndex = 0;
+            }
+            else
+            {
+                currentSearchResultIndex++;
+
+                if (currentSearchResultIndex >= searchResults.Count)
+                {
+                    currentSearchResultIndex = 0;
+                }
             }
 
             SelectSearchResult();
@@ -795,11 +798,18 @@ namespace PeekMemo
                 return;
             }
 
-            currentSearchResultIndex--;
-
             if (currentSearchResultIndex < 0)
             {
                 currentSearchResultIndex = searchResults.Count - 1;
+            }
+            else
+            {
+                currentSearchResultIndex--;
+
+                if (currentSearchResultIndex < 0)
+                {
+                    currentSearchResultIndex = searchResults.Count - 1;
+                }
             }
 
             SelectSearchResult();
@@ -809,20 +819,96 @@ namespace PeekMemo
         {
             string keyword = SearchTextBox.Text;
 
+            if (string.IsNullOrWhiteSpace(keyword))
+            {
+                return;
+            }
+
             int index = searchResults[currentSearchResultIndex];
 
             MemoTextBox.Focus();
+
             MemoTextBox.Select(index, keyword.Length);
+
+            MemoTextBox.ScrollToLine(
+                MemoTextBox.GetLineIndexFromCharacterIndex(index));
 
             SearchResultText.Text =
                 $"{currentSearchResultIndex + 1} / {searchResults.Count}";
+
+            Dispatcher.BeginInvoke(
+                new Action(() =>
+                {
+                    SearchTextBox.Focus();
+                    SearchTextBox.CaretIndex = SearchTextBox.Text.Length;
+                }),
+                DispatcherPriority.Background);
         }
 
         private void CloseSearchButton_Click(object sender, RoutedEventArgs e)
         {
+            CloseSearchPanel();
+        }
+
+        private void CloseSearchPanel()
+        {
             SearchPanel.Visibility = Visibility.Collapsed;
             SearchTextBox.Text = "";
             MemoTextBox.Focus();
+        }
+
+        private void NextSearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            MoveSearchResult(1);
+        }
+
+        private void PreviousSearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            MoveSearchResult(-1);
+        }
+
+        private void MoveSearchResult(int direction)
+        {
+            string keyword = SearchTextBox.Text;
+
+            if (string.IsNullOrWhiteSpace(keyword))
+            {
+                SearchResultText.Text = "0 / 0";
+                return;
+            }
+
+            if (keyword != lastSearchKeyword)
+            {
+                BuildSearchResults();
+            }
+
+            if (searchResults.Count == 0)
+            {
+                SearchResultText.Text = "0 / 0";
+                return;
+            }
+
+            if (currentSearchResultIndex < 0)
+            {
+                currentSearchResultIndex =
+                    direction > 0 ? 0 : searchResults.Count - 1;
+            }
+            else
+            {
+                currentSearchResultIndex += direction;
+
+                if (currentSearchResultIndex >= searchResults.Count)
+                {
+                    currentSearchResultIndex = 0;
+                }
+
+                if (currentSearchResultIndex < 0)
+                {
+                    currentSearchResultIndex = searchResults.Count - 1;
+                }
+            }
+
+            SelectSearchResult();
         }
 
     }
