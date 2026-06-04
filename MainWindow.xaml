@@ -16,9 +16,26 @@
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent">
-
-   
     
+    <Window.Resources>
+        <Style x:Key="ToolbarButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="28"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Margin" Value="0,0,6,0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="14"/>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#22000000"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+
     <Grid Background="Transparent"
       MouseEnter="Window_MouseEnter"
       MouseLeave="Window_MouseLeave"
@@ -56,23 +73,25 @@
                                                 <Button
                                 x:Name="PinButton"
                                 Content="📌"
-                                Width="28"
-                                Height="28"
-                                Margin="0 0 6 0"
+                                FontSize="15"
+                                Foreground="#555555"
+                                Style="{StaticResource ToolbarButtonStyle}"
                                 Click="PinButton_Click"/>
 
                                                 <Button
                                 x:Name="HideToTrayButton"
-                                Content="👁"
-                                Width="28"
-                                Height="28"
-                                Margin="0 0 6 0"
+                               Content="🙈"
+                                FontSize="15"
+                                Foreground="#555555"
+                                Style="{StaticResource ToolbarButtonStyle}"
                                 Click="HideToTrayButton_Click"/>
 
                                                 <Button
-                                Content="⚙"
-                                Width="28"
-                                Height="28"
+                               Content="⚙"
+                                FontSize="15"
+                                Foreground="#555555"
+                                Style="{StaticResource ToolbarButtonStyle}"
+                                Margin="0"
                                 Click="SettingsButton_Click"/>
                                             </StackPanel>
                                         </Grid>
@@ -89,57 +108,77 @@
                                     VerticalAlignment="Top"
                                     Margin="0,0,0,8">
 
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="26" />
+                                <ColumnDefinition Width="26" />
+                                <ColumnDefinition Width="26" />
+                            </Grid.ColumnDefinitions>
 
                             <TextBox
-                                    x:Name="SearchTextBox"
-                                    Width="180"
-                                    TextChanged="SearchTextBox_TextChanged"/>
+                                x:Name="SearchTextBox"
+                                Grid.Column="0"
+                                Height="24"
+                                Margin="0,0,8,0"
+                                VerticalContentAlignment="Center"
+                                Padding="4,0"
+                                TextChanged="SearchTextBox_TextChanged"/>
 
-                            <TextBlock
-                                    x:Name="SearchResultText"
-                                    Grid.Column="1"
-                                    Margin="8,0"
-                                    VerticalAlignment="Center"
-                                    Text="0 / 0"/>
+                                                    <TextBlock
+                                x:Name="SearchResultText"
+                                Grid.Column="1"
+                                Margin="0,0,8,0"
+                                FontSize="11"
+                                Foreground="#777777"
+                                VerticalAlignment="Center"
+                                Text="0 / 0"/>
 
-                            <Button
+                                                    <Button
                                 x:Name="PreviousSearchButton"
                                 Grid.Column="2"
                                 Focusable="False"
                                 Content="▲"
-                                Width="24"
-                                Height="24"
+                                Width="22"
+                                Height="22"
+                                Margin="0"
+                                Padding="0"
+                                Background="Transparent"
+                                BorderBrush="#CCCCCC"
+                                BorderThickness="1"
                                 Click="PreviousSearchButton_Click"/>
 
-                                                            <Button
+                                                    <Button
                                 x:Name="NextSearchButton"
                                 Grid.Column="3"
                                 Focusable="False"
                                 Content="▼"
-                                Width="24"
-                                Height="24"
-                                Margin="4 0 0 0"
+                                Width="22"
+                                Height="22"
+                                Margin="2,0,0,0"
+                                Padding="0"
+                                Background="Transparent"
+                                BorderBrush="#CCCCCC"
+                                BorderThickness="1"
                                 Click="NextSearchButton_Click"/>
 
-                                <Button
+                                                    <Button
                                 x:Name="CloseSearchButton"
                                 Grid.Column="4"
                                 Focusable="False"
-                                Content="X"
-                                Width="24"
-                                Height="24"
-                                Margin="4 0 0 0"
+                                Content="✕"
+                                FontSize="13"
+                                Background="Transparent"
+                                BorderBrush="#CCCCCC"
+                                BorderThickness="1"
+                                Width="22"
+                                Height="22"
+                                Margin="4,0,0,0"
+                                Padding="0"
                                 Click="CloseSearchButton_Click"/>
-                               </Grid>
-                                            </Border>
+                                                </Grid>
+                    </Border>
 
                                 <TextBox
                             x:Name="MemoTextBox"
