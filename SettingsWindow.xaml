@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="PeekMemo 설정"
         Width="370"
-        Height="700"
+        Height="550"
         MinWidth="370"
-        MinHeight="700"
+        MinHeight="550"
         ResizeMode="CanResizeWithGrip"
         WindowStartupLocation="CenterOwner">
 
@@ -49,7 +49,7 @@
     x:Key="OptionButtonStyle"
     TargetType="RadioButton">
 
-            <Setter Property="Height" Value="34"/>
+            <Setter Property="Height" Value="38"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
 
             <Setter Property="Template">
@@ -107,8 +107,8 @@
                        FontWeight="Bold"
                        Foreground="#333333"
                        Margin="0 0 0 18"/>
-
-            <Border Grid.Row="1"
+             
+                <Border Grid.Row="1"
                     Background="#FFFFFF"
                     BorderBrush="#FFF5F5F5"
                     BorderThickness="1"
@@ -156,9 +156,12 @@
                             Click="AddIndexButton_Click"/>
                 </StackPanel>
             </Border>
-
+            
             <Grid Grid.Row="2">
-                <StackPanel x:Name="AppSettingsPanel">
+                <ScrollViewer
+                     VerticalScrollBarVisibility="Auto">
+                    <Grid>
+                    <StackPanel x:Name="AppSettingsPanel">
                     <TextBlock
                     Text="열기 방식"
                     FontWeight="SemiBold"
@@ -327,7 +330,8 @@
                         FontWeight="SemiBold"
                         Click="ResetAppSettingsButton_Click"/>
                 </StackPanel>
-
+                    </Grid>
+                </ScrollViewer>
                 <StackPanel x:Name="IndexSettingsPanel"
                             Visibility="Collapsed">
                     <Grid Margin="0,0,0,6">
@@ -412,6 +416,7 @@
                         FontWeight="Bold"
                         Click="DeleteIndexButton_Click"/>
                 </StackPanel>
+                    
             </Grid>
 
             <Border Grid.Row="3"

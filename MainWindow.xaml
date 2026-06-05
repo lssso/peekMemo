@@ -203,7 +203,7 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBlock
-                        Text="PeekMemo"
+                        Text="PeekMemo v1.0.0"
                         FontSize="11"
                         Foreground="#777777"
                         VerticalAlignment="Center"/>
