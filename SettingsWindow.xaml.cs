@@ -206,48 +206,31 @@ namespace PeekMemo
         {
             isLoadingSettings = true;
 
-            OpenModeComboBox.SelectedIndex = tempSettings.OpenMode == "Click" ? 1 : 0;
+            OpenModeHoverRadio.IsChecked =
+                tempSettings.OpenMode == "Hover";
 
-            if (tempSettings.IndexLength == "Short")
-            {
-                IndexLengthComboBox.SelectedIndex = 0;
-            }
-            else if (tempSettings.IndexLength == "Long")
-            {
-                IndexLengthComboBox.SelectedIndex = 2;
-            }
-            else
-            {
-                IndexLengthComboBox.SelectedIndex = 1;
-            }
+            OpenModeClickRadio.IsChecked =
+                tempSettings.OpenMode == "Click";
 
-            if (tempSettings.Edge == "Left")
-            {
-                EdgeComboBox.SelectedIndex = 0;
-            }
-            else
-            {
-                EdgeComboBox.SelectedIndex = 1;
-            }
+            OpenModeHoverRadio.IsChecked = tempSettings.OpenMode == "Hover";
+            OpenModeClickRadio.IsChecked = tempSettings.OpenMode == "Click";
 
-            if (tempSettings.Alignment == "Top")
-            {
-                AlignmentComboBox.SelectedIndex = 0;
-            }
-            else if (tempSettings.Alignment == "Bottom")
-            {
-                AlignmentComboBox.SelectedIndex = 2;
-            }
-            else
-            {
-                AlignmentComboBox.SelectedIndex = 1;
-            }
+            IndexLengthShortRadio.IsChecked = tempSettings.IndexLength == "Short";
+            IndexLengthMediumRadio.IsChecked = tempSettings.IndexLength == "Medium";
+            IndexLengthLongRadio.IsChecked = tempSettings.IndexLength == "Long";
+
+            EdgeLeftRadio.IsChecked = tempSettings.Edge == "Left";
+            EdgeRightRadio.IsChecked = tempSettings.Edge == "Right";
+
+            AlignmentTopRadio.IsChecked = tempSettings.Alignment == "Top";
+            AlignmentCenterRadio.IsChecked = tempSettings.Alignment == "Center";
+            AlignmentBottomRadio.IsChecked = tempSettings.Alignment == "Bottom";
 
             StartWithWindowsCheckBox.IsChecked = tempSettings.StartWithWindows;
 
             isLoadingSettings = false;
 
-            DataFolderTextBox.Text = tempSettings.DataFolder;
+            DataFolderTextBlock.Text = tempSettings.DataFolder;
         }
 
         private void SettingValue_Changed(object sender, RoutedEventArgs e)
@@ -265,12 +248,6 @@ namespace PeekMemo
 
             UpdateAddButton();
 
-            //잠시 설정 미리보기 off
-            if(sender == EdgeComboBox)
-            {
-                return;
-            }
-
             SettingsPreviewChanged?.Invoke(tempSettings);
         }
 
@@ -279,18 +256,22 @@ namespace PeekMemo
             if (selectedIndex == -1)
             {
                 tempSettings.OpenMode =
-                    OpenModeComboBox.SelectedIndex == 0 ? "Hover" : "Click";
+                    OpenModeHoverRadio.IsChecked == true
+                        ? "Hover"
+                        : "Click";
 
                 tempSettings.IndexLength =
-                    IndexLengthComboBox.SelectedIndex == 0 ? "Short" :
-                    IndexLengthComboBox.SelectedIndex == 1 ? "Medium" : "Long";
+                    IndexLengthShortRadio.IsChecked == true ? "Short" :
+                    IndexLengthLongRadio.IsChecked == true ? "Long" :
+                    "Medium";
 
                 tempSettings.Edge =
-                    EdgeComboBox.SelectedIndex == 0 ? "Left" : "Right";
+                    EdgeLeftRadio.IsChecked == true ? "Left" : "Right";
 
                 tempSettings.Alignment =
-                    AlignmentComboBox.SelectedIndex == 0 ? "Top" :
-                    AlignmentComboBox.SelectedIndex == 2 ? "Bottom" : "Center";
+                    AlignmentTopRadio.IsChecked == true ? "Top" :
+                    AlignmentBottomRadio.IsChecked == true ? "Bottom" :
+                    "Center";
 
                 tempSettings.StartWithWindows =
                     StartWithWindowsCheckBox.IsChecked == true;
@@ -560,7 +541,7 @@ namespace PeekMemo
                     }
 
                     tempSettings.DataFolder = newFolder;
-                    DataFolderTextBox.Text = dialog.SelectedPath;
+                    DataFolderTextBlock.Text = dialog.SelectedPath;
                 }
             }
         }

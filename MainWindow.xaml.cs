@@ -203,6 +203,31 @@ namespace PeekMemo
 
             trayIcon.DoubleClick += TrayIcon_DoubleClick;
 
+            Forms.ContextMenuStrip trayMenu = new Forms.ContextMenuStrip();
+
+            trayMenu.Items.Add("열기", null, (s, args) =>
+            {
+                Show();
+                WindowState = WindowState.Normal;
+                SetWindowPositionInstant();
+                Activate();
+            });
+
+            trayMenu.Items.Add("종료", null, (s, args) =>
+            {
+                isReallyClosing = true;
+
+                if (trayIcon != null)
+                {
+                    trayIcon.Visible = false;
+                    trayIcon.Dispose();
+                }
+
+                Close();
+            });
+
+            trayIcon.ContextMenuStrip = trayMenu;
+
             RegisterGlobalHotKeys();
         }
 

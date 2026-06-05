@@ -36,6 +36,60 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style x:Key="CleanComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Padding" Value="8,0"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#FFBDBDBD"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <Style
+    x:Key="OptionButtonStyle"
+    TargetType="RadioButton">
+
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+
+                        <Border
+                    x:Name="Border"
+                    CornerRadius="8"
+                    BorderThickness="1"
+                    BorderBrush="#FFE5E5E5"
+                    Background="#FFF8F8F8">
+
+                            <ContentPresenter
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"/>
+
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter
+                            TargetName="Border"
+                            Property="Background"
+                            Value="#FFFFD54F"/>
+
+                                <Setter
+                            TargetName="Border"
+                            Property="BorderBrush"
+                            Value="#FFE0B300"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+        </Style>
     </Window.Resources>
 
     <Border Background="White" Padding="20">
@@ -105,82 +159,154 @@
 
             <Grid Grid.Row="2">
                 <StackPanel x:Name="AppSettingsPanel">
-                    <TextBlock Text="열기 방식" Margin="0 0 0 5"/>
+                    <TextBlock
+                    Text="열기 방식"
+                    FontWeight="SemiBold"
+                    Margin="0,0,0,6"/>
 
-                    <ComboBox x:Name="OpenModeComboBox"
-                              Height="30"
-                              Margin="0 0 0 15"
-                              SelectionChanged="SettingValue_Changed"
-                              VerticalContentAlignment="Center"
-                              SelectedIndex="0">
-                        <ComboBoxItem Content="마우스오버"/>
-                        <ComboBoxItem Content="클릭"/>
-                    </ComboBox>
+                                    <UniformGrid
+                    Columns="2"
+                    Margin="0,0,0,15">
 
-                    <TextBlock Text="인덱스 길이" Margin="0 0 0 5"/>
+                                        <RadioButton
+                        x:Name="OpenModeHoverRadio"
+                        Content="마우스오버"
+                        Checked="SettingValue_Changed"
+                        GroupName="OpenMode"
+                        Style="{StaticResource OptionButtonStyle}"/>
 
-                    <ComboBox x:Name="IndexLengthComboBox"
-                              Height="30"
-                              Margin="0 0 0 18"
-                              VerticalContentAlignment="Center"
-                              SelectionChanged="SettingValue_Changed"
-                              SelectedIndex="1">
-                        <ComboBoxItem Content="짧게"/>
-                        <ComboBoxItem Content="중간"/>
-                        <ComboBoxItem Content="길게"/>
-                    </ComboBox>
+                                        <RadioButton
+                        x:Name="OpenModeClickRadio"
+                        Content="클릭"
+                        GroupName="OpenMode"
+                        Checked="SettingValue_Changed"
+                        Margin="6,0,0,0"
+                        Style="{StaticResource OptionButtonStyle}"/>
+                                    </UniformGrid>
 
-                    <TextBlock Text="표시 위치" Margin="0 0 0 5"/>
+                    <TextBlock Text="인덱스 길이" FontWeight="SemiBold" Margin="0 0 0 6"/>
 
-                    <ComboBox
-                        x:Name="EdgeComboBox"
-                        Height="30"
-                        Margin="0 0 0 18"
-                        SelectionChanged="SettingValue_Changed"
-                        VerticalContentAlignment="Center"
-                        SelectedIndex="1">
-                        <ComboBoxItem Content="좌측"/>
-                        <ComboBoxItem Content="우측"/>
-                    </ComboBox>
+                    <UniformGrid Columns="3" Margin="0 0 0 18">
+                            <RadioButton x:Name="IndexLengthShortRadio"
+                     Content="짧게"
+                     GroupName="IndexLength"
+                     Checked="SettingValue_Changed"
+                     Style="{StaticResource OptionButtonStyle}"/>
 
-                    <TextBlock Text="세로 위치" Margin="0 0 0 5"/>
+                            <RadioButton x:Name="IndexLengthMediumRadio"
+                     Content="중간"
+                     GroupName="IndexLength"
+                     Margin="6,0,0,0"
+                     Checked="SettingValue_Changed"
+                     Style="{StaticResource OptionButtonStyle}"/>
 
-                    <ComboBox
-                    x:Name="AlignmentComboBox"
-                    Height="30"
-                    Margin="0 0 0 18"
-                    SelectionChanged="SettingValue_Changed"
-                    VerticalContentAlignment="Center"
-                    SelectedIndex="1">
-                        <ComboBoxItem Content="상단"/>
-                        <ComboBoxItem Content="중간"/>
-                        <ComboBoxItem Content="하단"/>
-                    </ComboBox>
+                            <RadioButton x:Name="IndexLengthLongRadio"
+                     Content="길게"
+                     GroupName="IndexLength"
+                     Margin="6,0,0,0"
+                     Checked="SettingValue_Changed"
+                     Style="{StaticResource OptionButtonStyle}"/>
+                        </UniformGrid>
+
+                    <TextBlock Text="표시 위치" FontWeight="SemiBold" Margin="0 0 0 6"/>
+
+                    <UniformGrid Columns="2" Margin="0 0 0 18">
+                            <RadioButton x:Name="EdgeLeftRadio"
+                     Content="좌측"
+                     GroupName="Edge"
+                     Checked="SettingValue_Changed"
+                     Style="{StaticResource OptionButtonStyle}"/>
+
+                            <RadioButton x:Name="EdgeRightRadio"
+                     Content="우측"
+                     GroupName="Edge"
+                     Margin="6,0,0,0"
+                     Checked="SettingValue_Changed"
+                     Style="{StaticResource OptionButtonStyle}"/>
+                        </UniformGrid>
+
+                    <TextBlock Text="세로 위치" FontWeight="SemiBold" Margin="0 0 0 6"/>
+
+                    <UniformGrid Columns="3" Margin="0 0 0 18">
+                        <RadioButton x:Name="AlignmentTopRadio"
+                         Content="상단"
+                         GroupName="Alignment"
+                         Checked="SettingValue_Changed"
+                         Style="{StaticResource OptionButtonStyle}"/>
+
+                                <RadioButton x:Name="AlignmentCenterRadio"
+                         Content="중간"
+                         GroupName="Alignment"
+                         Margin="6,0,0,0"
+                         Checked="SettingValue_Changed"
+                         Style="{StaticResource OptionButtonStyle}"/>
+
+                                <RadioButton x:Name="AlignmentBottomRadio"
+                         Content="하단"
+                         GroupName="Alignment"
+                         Margin="6,0,0,0"
+                         Checked="SettingValue_Changed"
+                         Style="{StaticResource OptionButtonStyle}"/>
+                            </UniformGrid>
 
                     <TextBlock
                         Text="저장 위치"
                         Margin="0,0,0,6"
                         FontWeight="SemiBold"/>
 
-                                        <Grid Margin="0,0,0,18">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="70" />
-                                            </Grid.ColumnDefinitions>
+                    <Border
+                        Background="#FFF8F8F8"
+                        BorderBrush="#FFEAEAEA"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="10"
+                        Margin="0,0,0,18">
 
-                                            <TextBox
-                            x:Name="DataFolderTextBox"
-                            Grid.Column="0"
-                            IsReadOnly="True"
-                            VerticalContentAlignment="Center"
-                            Margin="0,0,8,0"/>
+                                            <Grid>
 
-                                            <Button
-                            x:Name="ChangeDataFolderButton"
-                            Grid.Column="1"
-                            Content="변경"
-                            Click="ChangeDataFolderButton_Click"/>
-                                        </Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                Text="📁 저장 위치"
+                                FontWeight="SemiBold"
+                                VerticalAlignment="Center"/>
+
+                            <Button
+                                x:Name="ChangeDataFolderButton"
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Content="📂 변경"
+                                Width="82"
+                                Height="30"
+                                Background="#FFFFFFFF"
+                                BorderBrush="#FFBDBDBD"
+                                BorderThickness="1"
+                                Foreground="#333333"
+                                FontWeight="SemiBold"
+                                Cursor="Hand"
+                                Click="ChangeDataFolderButton_Click"/>
+
+                            <TextBlock
+                                x:Name="DataFolderTextBlock"
+                                Grid.Row="1"
+                                Grid.ColumnSpan="2"
+                                Margin="0,8,0,0"
+                                TextWrapping="Wrap"
+                                Foreground="#666666"/>
+
+                                            </Grid>
+
+                                        </Border>
 
 
 
