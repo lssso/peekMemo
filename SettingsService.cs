@@ -66,21 +66,21 @@ namespace PeekMemo
                 {
                     new MemoIndexSettings
                     {
-                        Title = "업무",
+                        Title = "인덱스1",
                         Color = "#FFFFD54F",
                         HotKey = "",
                         MemoFileName = "memo1.txt"
                     },
                     new MemoIndexSettings
                     {
-                        Title = "개인",
+                        Title = "인덱스2",
                         Color = "#FFF8BBD0",
                         HotKey = "",
                         MemoFileName = "memo2.txt"
                     },
                     new MemoIndexSettings
                     {
-                        Title = "공부",
+                        Title = "인덱스3",
                         Color = "#FFBBDEFB",
                         HotKey = "",
                         MemoFileName = "memo3.txt"

@@ -368,7 +368,7 @@ namespace PeekMemo
 
                 tempSettings.VisibleIndexCount++;
 
-                tempSettings.Indexes[newIndex].Title = "인덱스명";
+                tempSettings.Indexes[newIndex].Title = $"인덱스{newIndex + 1}";
                 tempSettings.Indexes[newIndex].Color = GetUnusedDefaultColor();
                 tempSettings.Indexes[newIndex].MemoFileName = $"memo{newIndex + 1}.txt";
 
@@ -477,7 +477,7 @@ namespace PeekMemo
             {
                 tempSettings.Indexes.Add(new MemoIndexSettings
                 {
-                    Title = "인덱스명",
+                    Title = $"인덱스{tempSettings.Indexes.Count + 1}",
                     Color = "#FFFFD54F",
                     HotKey = "",
                     MemoFileName = $"memo{tempSettings.Indexes.Count + 1}.txt"

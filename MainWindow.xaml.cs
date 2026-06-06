@@ -428,8 +428,16 @@ namespace PeekMemo
             ApplyIndexLength();
             ApplyEdgeLayout();
 
+            bool wasPinnedMode = isPinnedMode;
+
             isPinned = false;
+
             SetWindowPositionInstant();
+
+            if (wasPinnedMode)
+            {
+                ShowMemo();
+            }
         }
 
         private string GetCurrentMemoFileName()
