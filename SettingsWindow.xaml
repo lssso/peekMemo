@@ -90,6 +90,42 @@
             </Setter>
 
         </Style>
+        <Style TargetType="{x:Type ScrollBar}">
+            <Setter Property="Width" Value="4"/>
+            <Setter Property="MinWidth" Value="4"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollBar}">
+                        <Grid
+                            Width="{TemplateBinding Width}"
+                            Background="Transparent">
+
+                            <Track
+                        x:Name="PART_Track"
+                         Width="{TemplateBinding Width}"
+                        IsDirectionReversed="True">
+
+                                <Track.Thumb>
+                                    <Thumb
+                                Width="{TemplateBinding Width}"
+                                Background="#FFD0D0D0">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="{x:Type Thumb}">
+                                                <Border
+                                            Width="{TemplateBinding Width}"
+                                            Background="{TemplateBinding Background}"
+                                            CornerRadius="3"/>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
     <Border Background="White" Padding="20">
@@ -159,7 +195,9 @@
             
             <Grid Grid.Row="2">
                 <ScrollViewer
-                     VerticalScrollBarVisibility="Auto">
+                    VerticalScrollBarVisibility="Auto"
+                    Padding="0,0,4,0"
+                    HorizontalScrollBarVisibility="Disabled">
                     <Grid>
                     <StackPanel x:Name="AppSettingsPanel">
                     <TextBlock
