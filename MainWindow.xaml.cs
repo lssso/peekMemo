@@ -948,19 +948,26 @@ namespace PeekMemo
         {
             Forms.Screen[] screens = Forms.Screen.AllScreens;
 
-            Forms.Screen targetScreen = Forms.Screen.PrimaryScreen;
+            Forms.Screen primaryScreen = Forms.Screen.PrimaryScreen;
+            Forms.Screen targetScreen = primaryScreen;
 
-            if (appSettings.Monitor == "Screen1" && screens.Length >= 1)
+            List<Forms.Screen> subScreens = new List<Forms.Screen>();
+
+            foreach (Forms.Screen screen in screens)
             {
-                targetScreen = screens[0];
+                if (!screen.Primary)
+                {
+                    subScreens.Add(screen);
+                }
             }
-            else if (appSettings.Monitor == "Screen2" && screens.Length >= 2)
+
+            if (appSettings.Monitor == "Sub1" && subScreens.Count >= 1)
             {
-                targetScreen = screens[1];
+                targetScreen = subScreens[0];
             }
-            else if (appSettings.Monitor == "Screen3" && screens.Length >= 3)
+            else if (appSettings.Monitor == "Sub2" && subScreens.Count >= 2)
             {
-                targetScreen = screens[2];
+                targetScreen = subScreens[1];
             }
 
             return new Rect(

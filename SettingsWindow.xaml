@@ -290,7 +290,35 @@
                          Style="{StaticResource OptionButtonStyle}"/>
                             </UniformGrid>
 
-                    <TextBlock
+                            <TextBlock Text="모니터"
+                               FontWeight="SemiBold"
+                               Margin="0 0 0 6"/>
+
+                                                <UniformGrid Columns="3"
+                                 Margin="0 0 0 18">
+
+                                                    <RadioButton x:Name="MonitorPrimaryRadio"
+                                     Content="주 모니터"
+                                     GroupName="Monitor"
+                                     Checked="SettingValue_Changed"
+                                     Style="{StaticResource OptionButtonStyle}"/>
+
+                                                    <RadioButton x:Name="MonitorSub1Radio"
+                                     Content="보조 1"
+                                     GroupName="Monitor"
+                                     Margin="6,0,0,0"
+                                     Checked="SettingValue_Changed"
+                                     Style="{StaticResource OptionButtonStyle}"/>
+
+                                                    <RadioButton x:Name="MonitorSub2Radio"
+                                     Content="보조 2"
+                                     GroupName="Monitor"
+                                     Margin="6,0,0,0"
+                                     Checked="SettingValue_Changed"
+                                     Style="{StaticResource OptionButtonStyle}"/>
+                                                </UniformGrid>
+                        
+                            <TextBlock
                         Text="저장 위치"
                         Margin="0,0,0,6"
                         FontWeight="SemiBold"/>

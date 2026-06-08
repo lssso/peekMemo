@@ -226,11 +226,36 @@ namespace PeekMemo
             AlignmentCenterRadio.IsChecked = tempSettings.Alignment == "Center";
             AlignmentBottomRadio.IsChecked = tempSettings.Alignment == "Bottom";
 
+            int screenCount = Forms.Screen.AllScreens.Length;
+
+            MonitorPrimaryRadio.Visibility = Visibility.Visible;
+            MonitorSub1Radio.Visibility =
+                screenCount >= 2 ? Visibility.Visible : Visibility.Collapsed;
+            MonitorSub2Radio.Visibility =
+                screenCount >= 3 ? Visibility.Visible : Visibility.Collapsed;
+
+            MonitorPrimaryRadio.IsChecked = tempSettings.Monitor == "Primary";
+            MonitorSub1Radio.IsChecked = tempSettings.Monitor == "Sub1";
+            MonitorSub2Radio.IsChecked = tempSettings.Monitor == "Sub2";
+
+            if (tempSettings.Monitor == "Sub1" && screenCount < 2)
+            {
+                MonitorPrimaryRadio.IsChecked = true;
+                tempSettings.Monitor = "Primary";
+            }
+
+            if (tempSettings.Monitor == "Sub2" && screenCount < 3)
+            {
+                MonitorPrimaryRadio.IsChecked = true;
+                tempSettings.Monitor = "Primary";
+            }
+
             StartWithWindowsCheckBox.IsChecked = tempSettings.StartWithWindows;
 
             isLoadingSettings = false;
 
             DataFolderTextBlock.Text = tempSettings.DataFolder;
+
         }
 
         private void SettingValue_Changed(object sender, RoutedEventArgs e)
@@ -272,6 +297,19 @@ namespace PeekMemo
                     AlignmentTopRadio.IsChecked == true ? "Top" :
                     AlignmentBottomRadio.IsChecked == true ? "Bottom" :
                     "Center";
+
+                if (MonitorSub1Radio.IsChecked == true)
+                {
+                    tempSettings.Monitor = "Sub1";
+                }
+                else if (MonitorSub2Radio.IsChecked == true)
+                {
+                    tempSettings.Monitor = "Sub2";
+                }
+                else
+                {
+                    tempSettings.Monitor = "Primary";
+                }
 
                 tempSettings.StartWithWindows =
                     StartWithWindowsCheckBox.IsChecked == true;
