@@ -195,7 +195,13 @@ namespace PeekMemo
 
             trayIcon = new Forms.NotifyIcon();
 
-            trayIcon.Icon = Drawing.SystemIcons.Application;
+            string iconPath =
+                Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    "Assets",
+                    "PeekMemo.ico");
+
+            trayIcon.Icon = new Drawing.Icon(iconPath);
 
             trayIcon.Text = "PeekMemo";
 
