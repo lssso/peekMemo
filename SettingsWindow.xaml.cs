@@ -2,10 +2,11 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using Forms = System.Windows.Forms;
 using System.Windows;
 using System.Windows.Controls;
+using Forms = System.Windows.Forms;
 using System.Windows.Media;
+
 
 namespace PeekMemo
 {
@@ -13,7 +14,7 @@ namespace PeekMemo
     public static class StartupManager
     {
         private const string AppName = "PeekMemo";
-
+     
         public static void SetStartup(bool enable)
         {
             using (RegistryKey key =
@@ -42,6 +43,7 @@ namespace PeekMemo
         private AppSettings tempSettings;
         private bool isLoadingSettings = false;
         private int selectedIndex = -1;
+        private Forms.Screen[] screens;
 
         public event System.Action<AppSettings> SettingsPreviewChanged;
         public event System.Action<AppSettings> SettingsSaved;
@@ -51,6 +53,8 @@ namespace PeekMemo
         public SettingsWindow(AppSettings settings, int startIndex)
         {
             InitializeComponent();
+
+            screens = Forms.Screen.AllScreens;
 
             originalSettings = settings;
             tempSettings = CloneSettings(settings);
@@ -226,29 +230,7 @@ namespace PeekMemo
             AlignmentCenterRadio.IsChecked = tempSettings.Alignment == "Center";
             AlignmentBottomRadio.IsChecked = tempSettings.Alignment == "Bottom";
 
-            int screenCount = Forms.Screen.AllScreens.Length;
-
-            MonitorPrimaryRadio.Visibility = Visibility.Visible;
-            MonitorSub1Radio.Visibility =
-                screenCount >= 2 ? Visibility.Visible : Visibility.Collapsed;
-            MonitorSub2Radio.Visibility =
-                screenCount >= 3 ? Visibility.Visible : Visibility.Collapsed;
-
-            MonitorPrimaryRadio.IsChecked = tempSettings.Monitor == "Primary";
-            MonitorSub1Radio.IsChecked = tempSettings.Monitor == "Sub1";
-            MonitorSub2Radio.IsChecked = tempSettings.Monitor == "Sub2";
-
-            if (tempSettings.Monitor == "Sub1" && screenCount < 2)
-            {
-                MonitorPrimaryRadio.IsChecked = true;
-                tempSettings.Monitor = "Primary";
-            }
-
-            if (tempSettings.Monitor == "Sub2" && screenCount < 3)
-            {
-                MonitorPrimaryRadio.IsChecked = true;
-                tempSettings.Monitor = "Primary";
-            }
+            LoadMonitorOptions();
 
             StartWithWindowsCheckBox.IsChecked = tempSettings.StartWithWindows;
 
@@ -256,6 +238,71 @@ namespace PeekMemo
 
             DataFolderTextBlock.Text = tempSettings.DataFolder;
 
+        }
+
+        private void LoadMonitorOptions()
+        {
+            MonitorPrimaryRadio.Visibility =
+                screens.Length >= 1 ? Visibility.Visible : Visibility.Collapsed;
+
+            MonitorSub1Radio.Visibility =
+                screens.Length >= 2 ? Visibility.Visible : Visibility.Collapsed;
+
+            MonitorSub2Radio.Visibility =
+                screens.Length >= 3 ? Visibility.Visible : Visibility.Collapsed;
+
+            if (screens.Length >= 1)
+            {
+                MonitorPrimaryRadio.Content =
+                    screens[0].Primary ? "모니터 1 (주)" : "모니터 1";
+
+                MonitorPrimaryRadio.Tag = screens[0].DeviceName;
+            }
+
+            if (screens.Length >= 2)
+            {
+                MonitorSub1Radio.Content =
+                    screens[1].Primary ? "모니터 2 (주)" : "모니터 2";
+
+                MonitorSub1Radio.Tag = screens[1].DeviceName;
+            }
+
+            if (screens.Length >= 3)
+            {
+                MonitorSub2Radio.Content =
+                    screens[2].Primary ? "모니터 3 (주)" : "모니터 3";
+
+                MonitorSub2Radio.Tag = screens[2].DeviceName;
+            }
+
+            bool matched = false;
+
+            if (screens.Length >= 1
+                && tempSettings.Monitor == screens[0].DeviceName)
+            {
+                MonitorPrimaryRadio.IsChecked = true;
+                matched = true;
+            }
+
+            if (screens.Length >= 2
+                && tempSettings.Monitor == screens[1].DeviceName)
+            {
+                MonitorSub1Radio.IsChecked = true;
+                matched = true;
+            }
+
+            if (screens.Length >= 3
+                && tempSettings.Monitor == screens[2].DeviceName)
+            {
+                MonitorSub2Radio.IsChecked = true;
+                matched = true;
+            }
+
+            if (!matched)
+            {
+                MonitorPrimaryRadio.IsChecked = true;
+                tempSettings.Monitor = screens[0].DeviceName;
+            }
         }
 
         private void SettingValue_Changed(object sender, RoutedEventArgs e)
@@ -298,17 +345,17 @@ namespace PeekMemo
                     AlignmentBottomRadio.IsChecked == true ? "Bottom" :
                     "Center";
 
-                if (MonitorSub1Radio.IsChecked == true)
+                if (MonitorPrimaryRadio.IsChecked == true)
                 {
-                    tempSettings.Monitor = "Sub1";
+                    tempSettings.Monitor = MonitorPrimaryRadio.Tag.ToString();
+                }
+                else if (MonitorSub1Radio.IsChecked == true)
+                {
+                    tempSettings.Monitor = MonitorSub1Radio.Tag.ToString();
                 }
                 else if (MonitorSub2Radio.IsChecked == true)
                 {
-                    tempSettings.Monitor = "Sub2";
-                }
-                else
-                {
-                    tempSettings.Monitor = "Primary";
+                    tempSettings.Monitor = MonitorSub2Radio.Tag.ToString();
                 }
 
                 tempSettings.StartWithWindows =
