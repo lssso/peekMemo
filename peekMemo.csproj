@@ -122,7 +122,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="PeekMemo.ico" />
+    <Content Include="PeekMemo.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

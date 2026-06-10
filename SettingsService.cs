@@ -22,13 +22,13 @@ namespace PeekMemo
 
             if (!File.Exists(settingsFilePath))
             {
-                AppSettings defaultSettings =
-                    CreateDefaultSettings();
+                AppSettings defaultSettings = CreateDefaultSettings();
 
                 Save(defaultSettings);
 
                 return defaultSettings;
             }
+
             string json = File.ReadAllText(settingsFilePath);
 
             AppSettings settings =
@@ -50,6 +50,13 @@ namespace PeekMemo
         public static void Save(AppSettings settings)
         {
             string settingsFilePath = GetSettingsFilePath();
+
+            string folder = Path.GetDirectoryName(settingsFilePath);
+
+            if (!Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
 
             string json = JsonConvert.SerializeObject(settings, Formatting.Indented);
 
