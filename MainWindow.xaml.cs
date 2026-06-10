@@ -398,14 +398,9 @@ namespace PeekMemo
             MemoTabText2.Text = index2.Title;
             MemoTabText3.Text = index3.Title;
 
-            Brush colorBrush1 =
-                (Brush)new BrushConverter().ConvertFromString(index1.Color);
-
-            Brush colorBrush2 =
-                (Brush)new BrushConverter().ConvertFromString(index2.Color);
-
-            Brush colorBrush3 =
-                (Brush)new BrushConverter().ConvertFromString(index3.Color);
+            Brush colorBrush1 = GetSafeBrush(index1.Color);
+            Brush colorBrush2 = GetSafeBrush(index2.Color);
+            Brush colorBrush3 = GetSafeBrush(index3.Color);
 
             MemoTabBorder1.Background = colorBrush1;
             MemoTabBorder2.Background = colorBrush2;
@@ -413,8 +408,7 @@ namespace PeekMemo
 
             MemoIndexSettings currentIndexSetting = appSettings.Indexes[currentIndex];
 
-            Brush currentColorBrush =
-                (Brush)new BrushConverter().ConvertFromString(currentIndexSetting.Color);
+            Brush currentColorBrush = GetSafeBrush(currentIndexSetting.Color);
 
             MemoBodyBorder.Background = currentColorBrush;
 
@@ -491,16 +485,16 @@ namespace PeekMemo
             MemoTabText2.Text = index2.Title;
             MemoTabText3.Text = index3.Title;
 
-            Brush colorBrush1 = (Brush)new BrushConverter().ConvertFromString(index1.Color);
-            Brush colorBrush2 = (Brush)new BrushConverter().ConvertFromString(index2.Color);
-            Brush colorBrush3 = (Brush)new BrushConverter().ConvertFromString(index3.Color);
+            Brush colorBrush1 = GetSafeBrush(index1.Color);
+            Brush colorBrush2 = GetSafeBrush(index2.Color);
+            Brush colorBrush3 = GetSafeBrush(index3.Color);
 
             MemoTabBorder1.Background = colorBrush1;
             MemoTabBorder2.Background = colorBrush2;
             MemoTabBorder3.Background = colorBrush3;
 
             MemoIndexSettings currentIndexSetting = appSettings.Indexes[currentIndex];
-            Brush currentColorBrush = (Brush)new BrushConverter().ConvertFromString(currentIndexSetting.Color);
+            Brush currentColorBrush = GetSafeBrush(currentIndexSetting.Color);
 
             MemoBodyBorder.Background = currentColorBrush;
         }
@@ -970,6 +964,26 @@ namespace PeekMemo
                 targetScreen.WorkingArea.Top,
                 targetScreen.WorkingArea.Width,
                 targetScreen.WorkingArea.Height);
+        }
+
+        private Brush GetSafeBrush(string colorCode)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(colorCode))
+                {
+                    return Brushes.LightYellow;
+                }
+
+                Brush brush =
+                    (Brush)new BrushConverter().ConvertFromString(colorCode);
+
+                return brush ?? Brushes.LightYellow;
+            }
+            catch
+            {
+                return Brushes.LightYellow;
+            }
         }
 
 

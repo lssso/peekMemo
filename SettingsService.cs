@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.IO;
-using Newtonsoft.Json;
+using Forms = System.Windows.Forms;
 
 namespace PeekMemo
 {
@@ -21,9 +22,13 @@ namespace PeekMemo
 
             if (!File.Exists(settingsFilePath))
             {
-                return CreateDefaultSettings();
-            }
+                AppSettings defaultSettings =
+                    CreateDefaultSettings();
 
+                Save(defaultSettings);
+
+                return defaultSettings;
+            }
             string json = File.ReadAllText(settingsFilePath);
 
             AppSettings settings =
@@ -57,7 +62,7 @@ namespace PeekMemo
             {
                 DataFolder = DataFolderManager.GetDefaultDataFolder(),
                 OpenMode = "Hover",
-                Monitor = "Primary",
+                Monitor = Forms.Screen.PrimaryScreen.DeviceName,
                 Edge = "Right",
                 Alignment = "Center",
                 IndexLength = "Medium",

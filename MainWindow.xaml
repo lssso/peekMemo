@@ -188,6 +188,7 @@
                             AcceptsReturn="True"
                             VerticalScrollBarVisibility="Auto"
                             Background="#FFFFF8E1"
+                            Foreground="#333333"
                             BorderThickness="0"
                             Padding="10"
                             TextChanged="MemoTextBox_TextChanged"
